@@ -15,6 +15,9 @@
     },
     "exclude": [
         "node_modules",
+        "native-base-theme",
+        "native-base-theme/components",
+        "native-base-theme/variables",
         "babel.config.js",
         "metro.config.js",
         "jest.config.js"

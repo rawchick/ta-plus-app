@@ -14,6 +14,12 @@ import java.util.ArrayList;
 import com.reactntstarter.BuildConfig;
 import com.reactntstarter.R;
 
+// appcenter
+import com.microsoft.appcenter.reactnative.appcenter.AppCenterReactNativePackage;
+// appcenter-analytics
+import com.microsoft.appcenter.reactnative.analytics.AppCenterReactNativeAnalyticsPackage;
+// appcenter-crashes
+import com.microsoft.appcenter.reactnative.crashes.AppCenterReactNativeCrashesPackage;
 // react-native-azure-auth
 import com.auth.react.AzureAuthPackage;
 // react-native-gesture-handler
@@ -73,6 +79,9 @@ public class PackageList {
   public ArrayList<ReactPackage> getPackages() {
     return new ArrayList<>(Arrays.<ReactPackage>asList(
       new MainReactPackage(mConfig),
+      new AppCenterReactNativePackage(getApplication()),
+      new AppCenterReactNativeAnalyticsPackage(getApplication(), getResources().getString(R.string.appCenterAnalytics_whenToEnableAnalytics)),
+      new AppCenterReactNativeCrashesPackage(getApplication(), getResources().getString(R.string.appCenterCrashes_whenToSendCrashes)),
       new AzureAuthPackage(),
       new RNGestureHandlerPackage(),
       new OrientationPackage(),

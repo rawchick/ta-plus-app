@@ -31,7 +31,7 @@ const HomeStack = createStackNavigator(
                                 <Icon name='ios-contact' style={{ color: '#fff' }} />
                             </Button>
                             <Button transparent>
-                                <Icon name='ios-exit' style={{ color: '#fff' }} />
+                                <Icon onPress={() => _logOut(navigation)} name='ios-exit' style={{ color: '#fff' }} />
                             </Button>
                         </>
 

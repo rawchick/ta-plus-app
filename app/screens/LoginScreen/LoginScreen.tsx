@@ -3,7 +3,8 @@ import {
     AppRegistry,
     StyleSheet,
     View,
-    AsyncStorage
+    AsyncStorage,
+    Platform
 } from 'react-native';
 import {
     NavigationParams,
@@ -18,9 +19,15 @@ const TENANT_ID = 'bbb8da8f-f374-490f-9190-2242176e117c' // replace the string w
 const REDIRECT_URL = "azure://com.reactntstarter/android/callback"
 const azureAuth = new AzureAuth({
     clientId: CLIENT_ID,
-    redirectUri: "azure://com.reactntstarter/android/callback",
+    redirectUri: Platform.OS === 'ios' ? "com.reactntstarter://com.reactntstarter/ios/callback" : "azure://com.reactntstarter/android/callback" ,
     authorityUrl: `https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/authorize?client_id=${CLIENT_ID}`
 });
+
+// const azureAuth = new AzureAuth({
+//     clientId: CLIENT_ID,
+//     redirectUri: "azure://com.reactntstarter/android/callback",
+//     authorityUrl: `https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/authorize?client_id=${CLIENT_ID}`
+// });
 
 interface Props {
     navigation: NavigationScreenProp<NavigationState, NavigationParams>;

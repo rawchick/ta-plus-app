@@ -1,5 +1,5 @@
 #Internal package file, do not edit.
-#Wed Dec 11 15:21:34 ICT 2019
+#Fri Dec 13 16:27:17 ICT 2019
 70.path=lib/armeabi-v7a/libreactnativejni.so
 78.base=C\:\\works\\reactntstarter\\android\\app\\build\\intermediates\\transforms\\mergeJniLibs\\debug\\0
 84.path=fonts/Fontisto.ttf

@@ -12,7 +12,7 @@ class HomeCardItem extends Component<any> {
         return (
             <TouchableOpacity {...this.props}>
                 <Card>
-                    <CardItem {...this.props}>
+                    <CardItem>
                         <Left>
                             <Thumbnail source={{ uri: 'https://cdn.cnn.com/cnnnext/dam/assets/190419101004-avengers-endgame-3-exlarge-169.jpg' }} />
                             <Body>
@@ -32,7 +32,7 @@ class HomeCardItem extends Component<any> {
                             </Button>
                         </Left>
                         <Body>
-                            
+
                         </Body>
                         <Right>
                             <Text>11h ago</Text>

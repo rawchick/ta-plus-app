@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
     AppRegistry,
     StyleSheet,
@@ -6,45 +7,34 @@ import {
     AsyncStorage,
     Platform
 } from 'react-native';
-import {
-    NavigationParams,
-    NavigationScreenProp,
-    NavigationState,
-} from 'react-navigation';
-import { Container, Content, H1, Text, Button } from 'native-base'
+import { Container, Content, H1, H2, Text, Button } from 'native-base'
 import AzureAuth from 'react-native-azure-auth';
+import LoginScreenAction from './LoginScreenAction';
 
 const CLIENT_ID = 'd69a32fd-07ff-4576-84ca-9986f6a9c75e' // replace the string with YOUR client ID
 const TENANT_ID = 'bbb8da8f-f374-490f-9190-2242176e117c' // replace the string with YOUR tenant ID
-const REDIRECT_URL = "azure://com.reactntstarter/android/callback"
 const azureAuth = new AzureAuth({
     clientId: CLIENT_ID,
-    redirectUri: Platform.OS === 'ios' ? "com.reactntstarter://com.reactntstarter/ios/callback" : "azure://com.reactntstarter/android/callback" ,
+    redirectUri: Platform.OS === 'ios' ? "com.reactntstarter://com.reactntstarter/ios/callback" : "azure://com.reactntstarter/android/callback",
     authorityUrl: `https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/authorize?client_id=${CLIENT_ID}`
 });
 
-// const azureAuth = new AzureAuth({
-//     clientId: CLIENT_ID,
-//     redirectUri: "azure://com.reactntstarter/android/callback",
-//     authorityUrl: `https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/authorize?client_id=${CLIENT_ID}`
-// });
-
-interface Props {
-    navigation: NavigationScreenProp<NavigationState, NavigationParams>;
+const mapStateToProps = (state: any) => {
+    return { ...state, LoginScreenState: state.LoginScreenState }
 }
 
-export default class LoginScreen extends Component<Props> {
+class LoginScreen extends Component<any> {
     constructor(props: any) {
         super(props);
-        this.state = { accessToken: null, user: '', mails: [], userId: '' };
     }
 
+    componentDidMount() {
+        //this.props.init()
+    }
 
     _onLogin = async () => {
         try {
             let tokens = await azureAuth.webAuth.authorize({ scope: 'openid profile User.Read' })
-            console.log('CRED>>>', tokens)
-            this.setState({ accessToken: tokens.accessToken });
             await AsyncStorage.setItem('accessToken', tokens.accessToken);
             let info = await azureAuth.auth.msGraphRequest({ token: tokens.accessToken, path: 'me' })
             this.setState({ user: info.displayName, userId: tokens.userId });
@@ -71,20 +61,15 @@ export default class LoginScreen extends Component<Props> {
 
     _onLogout = () => {
         this.setState({ accessToken: null, user: null });
-        // azureAuth.webAuth
-        //   .clearSession({ closeOnLoad: true })
-        //   .then((success: any) => {
-        //     this.setState({ accessToken: null, user: null });
-        //   })
-        //   .catch((error: any) => console.log(error));
     };
 
     render() {
-        let loggedIn = this.state.accessToken ? true : false;
+        console.log(this.props)
         return (
             <Container style={styles.container}>
                 <Content>
                     <H1 style={styles.header}>HELLO TA PLUS !</H1>
+                    <H2 style={styles.subHeader}>Please login</H2>
                     <View style={styles.buttonContainer}>
                         <Button
                             style={styles.buttons}
@@ -94,27 +79,6 @@ export default class LoginScreen extends Component<Props> {
                             <Text style={styles.text}>Login With Azure</Text>
                         </Button>
                     </View>
-
-                    {/* <Button
-                        block
-                        bordered
-                        success
-                        onPress={this.getCustomScope}
-                        disabled={!loggedIn}
-                    >
-                        <Text>GET CUSTOM SCOPE TOKEN</Text>
-                    </Button>
-                    {this.state.customScopeToken && loggedIn ?
-                        <Card>
-                            <CardItem>
-                                <Body>
-                                    <Text>
-                                        {this.state.customScopeToken}
-                                    </Text>
-                                </Body>
-                            </CardItem>
-                        </Card>
-                        : null} */}
                 </Content>
             </Container>
         );
@@ -143,7 +107,11 @@ const styles = StyleSheet.create({
     },
     header: {
         textAlign: 'center',
-        margin: 30
+        margin: 5
+    },
+    subHeader: {
+        textAlign: 'center',
+        marginBottom: 30
     },
     text: {
         textAlign: 'center'
@@ -163,4 +131,4 @@ const styles = StyleSheet.create({
     }
 });
 
-AppRegistry.registerComponent('LoginScreen', () => LoginScreen);
+export default connect(mapStateToProps, {...LoginScreenAction})(LoginScreen);

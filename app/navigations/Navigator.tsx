@@ -1,5 +1,6 @@
 
 import React from 'react';
+import NewTripScreen from '../screens/NewTripScreen/NewTripScreen';
 import LoadingScreen from '../screens/LoadingScreen/LoadingScreen';
 import LoginScreen from '../screens/LoginScreen/LoginScreen';
 import HomeScreen from '../screens/HomeScreen/HomeScreen';
@@ -13,29 +14,13 @@ import {
 } from 'react-navigation-stack';
 import { Button, Text, Icon, View, Right } from 'native-base'
 
-const _logOut = async (navigation: any) => {
-    await AsyncStorage.removeItem('accessToken');
-    navigation.navigate("Starter")
-}
-
 const HomeStack = createStackNavigator(
     {
         Home: {
             screen: HomeScreen,
             navigationOptions: ({ navigation }): any => {
                 return {
-                    title: "HOME",
-                    headerRight: () => (
-                        <>
-                            <Button transparent>
-                                <Icon name='ios-contact' style={{ color: '#fff' }} />
-                            </Button>
-                            <Button transparent>
-                                <Icon onPress={() => _logOut(navigation)} name='ios-exit' style={{ color: '#fff' }} />
-                            </Button>
-                        </>
-
-                    )
+                    title: "HOME"
                 }
             }
         },
@@ -66,20 +51,27 @@ const HomeStack = createStackNavigator(
     }
 );
 
+const NewTripStack = createStackNavigator(
+    {
+        NewTrip: {
+            screen: NewTripScreen
+        }
+    },
+    {
+        mode: 'modal',
+        headerMode: 'none',
+        navigationOptions: ({ navigation }: any) => {
+            return {
+                tabBarVisible: false
+            };
+        }
+    }
+);
+
 const SettingStack = createStackNavigator(
     {
         Setting: {
-            screen: SettingScreen,
-            navigationOptions: ({ navigation }): any => {
-                return {
-                    title: "SETTING",
-                    headerRight: () => (
-                        <View>
-                            <Icon onPress={() => _logOut(navigation)} name="ios-exit" fontSize={22} style={{ color: '#fff', paddingRight: 20 }} />
-                        </View>
-                    )
-                }
-            }
+            screen: SettingScreen
         }
     },
     {
@@ -92,6 +84,10 @@ const SettingStack = createStackNavigator(
                 fontWeight: 'bold',
             },
         },
+        headerMode: 'none',
+        navigationOptions: {
+            headerVisible: false,
+        }
     }
 )
 
@@ -112,6 +108,15 @@ const TabNavigator = createBottomTabNavigator(
                 tabBarLabel: 'Home',
                 tabBarIcon: ({ tintColor }) => (
                     <Icon name="ios-home" fontSize={22} style={{ color: tintColor }} />
+                ),
+            }
+        },
+        NewTrip: {
+            screen: NewTripStack,
+            navigationOptions: {
+                tabBarLabel: 'New Trip',
+                tabBarIcon: ({ tintColor }) => (
+                    <Icon name="ios-add" fontSize={22} style={{ color: tintColor }} />
                 ),
             }
         },

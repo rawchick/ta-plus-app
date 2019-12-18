@@ -1,10 +1,10 @@
 class CreateReducer {
-    initialState : any;
-    constructor(state : any) {
-      this.initialState = state
+    initialState: any;
+    constructor(state: any) {
+        this.initialState = state
     }
-    reducer = (state = this.initialState  , { type , payload } : {type : string, payload : any}) =>
-    {
+
+    reducer = (state = this.initialState, { type, payload }: { type: string, payload: any }) => {
         switch (type) {
             case "update":
                 return { ...state, ...payload }
@@ -15,5 +15,6 @@ class CreateReducer {
         }
         return state
     }
-  }
+}
+
 export default CreateReducer

@@ -180,11 +180,13 @@ android {
 
 dependencies {
     compile project(':react-native-image-picker')
+    implementation project(':react-native-datetimepicker')
     implementation project(':react-native-vector-icons')
     implementation project(':@react-native-community_async-storage')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.facebook.react:react-native:+"  // From node_modules
-
+    compile project(':react-native-action-sheet')
+    compile project(':react-native-fingerprint-scanner')
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";
         debugImplementation files(hermesPath + "hermes-debug.aar")

@@ -1,58 +1,260 @@
-import styles from './styles';
+//import styles from './styles';
 import React, { Component } from 'react';
-import { View, AsyncStorage } from 'react-native';
-import { Container, Button, Text, Content } from 'native-base';
-// You only need NavigationScreenProps for TypeScript
-import {
-  NavigationParams,
-  NavigationScreenProp,
-  NavigationState,
-} from 'react-navigation';
-//import HomeScreenAction from '../../redux/actions/HomeScreenAction'
-import HomeCardItem from '../../components/HomeCardItem/HomeCardItem'
+import { connect } from 'react-redux';
+import { View, Platform, FlatList, Image, RefreshControl, StyleSheet } from 'react-native';
+import { Container, Button, Text, Content, Tab, Tabs, Spinner, Left, Icon } from 'native-base';
+import { ButtonGroup } from 'react-native-elements'
+import HomeScreenAction from './HomeScreenAction'
+import { ScrollView } from 'react-native-gesture-handler';
+import ActionSheet from 'react-native-action-sheet';
 
-interface Props {
-  navigation: NavigationScreenProp<NavigationState, NavigationParams>;
-}
+const mapStateToProps = (reduxState: any) => ({
+  ...reduxState,
+  HomeScreenState: reduxState.HomeScreenState
+})
 
-const mapStateToProps = (reduxState: any, ownProps: any) => ({
-  ...reduxState.HomeScreenState
-});
+const ASMenu = [
+  'View by Scheduled',
+  'View by Status'
+]
 
-class HomeScreen extends Component<Props> {
+class HomeScreen extends Component<any, any> {
   constructor(props: any) {
     super(props);
-
     this.state = {
-      isLoggedIn: false
+      selectedIndex: 0
     }
-
-    this.navigateToDetail = this.navigateToDetail.bind(this)
+    this.updateIndex = this.updateIndex.bind(this)
+    this._navigateToDetail = this._navigateToDetail.bind(this)
+    this.switchHeaderMenu = this.switchHeaderMenu.bind(this)
   }
 
-  _bootstrap = async () => {
-    const accessToken = await AsyncStorage.getItem('accessToken');
-    if (accessToken) {
-      this.setState({ isLoggedIn: true })
+  static navigationOptions = ({ navigation }: any) => {
+    return {
+      title: "MY TRIP",
+      headerRight: () => (
+        <Icon
+          name="options"
+          fontSize={20}
+          style={{ color: 'black', marginRight: 15 }}
+          onPress={() => {
+            ActionSheet.showActionSheetWithOptions({
+              options: ASMenu,
+              tintColor: 'blue'
+            },
+              (buttonIndex) => {
+                console.log('button clicked :', buttonIndex);
+              });
+          }}
+        />
+      ),
+      headerLeft: () => (<View></View>),
+      headerTitleStyle: {
+        textAlign: 'center',
+        flexGrow: 1,
+        fontWeight: "bold"
+      }
+    };
+  }
+
+  updateIndex(selectedIndex: number) {
+    this.props.fetchUser()
+    this.setState({ selectedIndex })
+  }
+
+  _navigateToDetail = (param: any) => () => {
+    this.props.navigation.navigate("Detail", { param })
+  }
+
+  componentDidMount() {
+    this.props.fetchUser() //Method for API call
+  }
+
+  handleLoadMore = () => {
+    if (!this.props.HomeScreenState.loading) {
+      this.props.loadMoreUser(); // method for API call 
     }
+  };
+
+  switchHeaderMenu = () => {
+    console.log("SWITCH")
   }
 
-  navigateToDetail() {
-    this.props.navigation.navigate("Detail", { title: 'Detail' })
+  renderFooter = () => {
+    //it will show indicator at the bottom of the list when data is loading otherwise it returns null
+    if (!this.props.HomeScreenState.loading) return null;
+    return (
+      <View style={{ paddingBottom: 20 }}>
+        <Spinner color='#533AAF' />
+      </View>
+    );
+  };
+
+  renderSeparator = () => {
+    return (
+      <View
+        style={{
+          height: 2,
+          width: '100%'
+        }}
+      />
+    );
+  };
+
+  onRefresh() {
+    this.props.fetchUser();
   }
+
 
   render() {
-    const { navigation } = this.props;
-    console.log()
+    const { selectedIndex }: any = this.state
+    const navParams = this.props.navigation.state.params
+    const { mode } = navParams
+
+    let buttons = ['SCHEDULED', 'COMPLETED']
+    if (mode === 'filter') {
+      buttons = [
+        'DRAFT',
+        'WAITING',
+        'WAITING FOR APPROVE'
+      ]
+    }
+
     return (
-      <Container>
-        <Content>
-          <HomeCardItem onPress={this.navigateToDetail} />
-          <HomeCardItem />
-        </Content>
-      </Container>
+      <View style={{ width: '100%', height: '100%' }}>
+        <ScrollView horizontal={mode === 'filter' ? true : false}>
+          <ButtonGroup
+            onPress={this.updateIndex}
+            selectedIndex={selectedIndex}
+            buttons={buttons}
+            containerStyle={{
+              height: 50,
+              width: '100%',
+              marginLeft: 0,
+              marginTop: 0,
+              borderRadius: 0,
+            }}
+            buttonStyle={{ backgroundColor: '#FFFFFF', borderColor: '#707070', padding: 20 }}
+            selectedButtonStyle={{
+              backgroundColor: '#FFFFFF',
+              borderBottomWidth: 3,
+              borderBottomColor: "#533AAF"
+            }}
+            textStyle={{
+              color: '#707070',
+              fontSize: 18,
+              fontWeight: "bold"
+            }}
+            selectedTextStyle={{
+              color: 'black'
+            }} />
+        </ScrollView>
+        {
+          (this.props.HomeScreenState.loading && this.props.HomeScreenState.page === 1) ?
+            <View style={{
+              width: '100%',
+              height: '100%',
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+              paddingTop: 20
+            }}>
+              <Spinner color='#533AAF' />
+            </View>
+            :
+            <FlatList
+              data={this.props.HomeScreenState.tripData}
+              extraData={this.props.HomeScreenState}
+              refreshControl={
+                <RefreshControl
+                  refreshing={this.props.HomeScreenState.isRefreshing}
+                  onRefresh={this.onRefresh.bind(this)}
+                  tintColor="#fff"
+                  titleColor="#533AAF"
+                />
+              }
+              renderItem={({ item }: any) => (
+                <View style={[styles.box, styles.shadow3]}>
+                  <Image source={{ uri: item.imagePath }} style={{ width: '100%', height: 200 }} />
+                  <View style={{
+                    alignItems: 'flex-start',
+                    padding: 20
+                  }}>
+                    <View style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      margin: 5
+                    }}>
+                      <Text style={{
+                        fontSize: 18,
+                        textAlign: 'left',
+                        color: 'black',
+                      }}>{item.trObjective}</Text>
+                    </View>
+                    <View style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      margin: 5
+                    }}>
+                      <Icon name="pin" fontSize={20} style={{ color: 'black', marginRight: 15 }} />
+                      <Text style={{
+                        fontSize: 16,
+                        color: "#707070"
+                      }}>{item.location}, {item.country}</Text>
+                    </View>
+                    <View style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      margin: 5
+                    }}>
+                      <Icon name="ios-clock" fontSize={20} style={{ color: 'black', marginRight: 15 }} />
+                      <Text style={{
+                        fontSize: 16,
+                        color: "#707070"
+                      }}>{item.period}</Text>
+                    </View>
+                  </View>
+                </View>
+              )}
+              keyExtractor={(item, index) => index.toString()}
+              ItemSeparatorComponent={this.renderSeparator}
+              ListFooterComponent={this.renderFooter.bind(this)}
+              onEndReachedThreshold={0.4}
+              onEndReached={this.handleLoadMore.bind(this)}
+            />
+        }
+      </View>
     );
   }
 }
 
-export default HomeScreen;
+function elevationShadowStyle(elevation: any) {
+  return {
+    elevation,
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 0.5 * elevation },
+    shadowOpacity: 0.3,
+    shadowRadius: 0.8 * elevation
+  };
+}
+
+const styles = StyleSheet.create({
+  shadow1: elevationShadowStyle(5),
+  shadow2: elevationShadowStyle(10),
+  shadow3: elevationShadowStyle(20),
+  box: {
+    borderRadius: 10,
+    backgroundColor: 'white',
+    padding: 0,
+    margin: 15,
+    overflow: 'hidden'
+  },
+  centerContent: {
+    justifyContent: 'space-around',
+    alignItems: 'center'
+  },
+});
+
+export default connect(mapStateToProps, { ...HomeScreenAction })(HomeScreen);

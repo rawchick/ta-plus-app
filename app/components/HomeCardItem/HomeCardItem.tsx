@@ -9,34 +9,18 @@ class HomeCardItem extends Component<any> {
     }
 
     render() {
+        const { source, handlePress, header, subHeader } = this.props
         return (
-            <TouchableOpacity {...this.props}>
+            <TouchableOpacity onPress={handlePress}>
                 <Card>
                     <CardItem>
                         <Left>
-                            <Thumbnail source={{ uri: 'https://cdn.cnn.com/cnnnext/dam/assets/190419101004-avengers-endgame-3-exlarge-169.jpg' }} />
+                            <Thumbnail source={source} />
                             <Body>
-                                <Text>NativeBase</Text>
-                                <Text note>GeekyAnts</Text>
+                                <Text>{header}</Text>
+                                <Text note>{subHeader}</Text>
                             </Body>
                         </Left>
-                    </CardItem>
-                    <CardItem cardBody>
-                        <Image source={{ uri: 'https://cdn.cnn.com/cnnnext/dam/assets/190419101004-avengers-endgame-3-exlarge-169.jpg' }} style={{ height: 200, width: null, flex: 1 }} />
-                    </CardItem>
-                    <CardItem>
-                        <Left>
-                            <Button transparent>
-                                <Icon active name="thumbs-up" />
-                                <Text>12 Likes</Text>
-                            </Button>
-                        </Left>
-                        <Body>
-
-                        </Body>
-                        <Right>
-                            <Text>11h ago</Text>
-                        </Right>
                     </CardItem>
                 </Card>
             </TouchableOpacity>

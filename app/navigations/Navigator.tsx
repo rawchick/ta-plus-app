@@ -1,39 +1,85 @@
 
 import React from 'react';
 import NewTripScreen from '../screens/NewTripScreen/NewTripScreen';
+import LandingNewTripScreen from '../screens/LandingNewTripScreen/LandingNewTripScreen';
 import LoadingScreen from '../screens/LoadingScreen/LoadingScreen';
 import LoginScreen from '../screens/LoginScreen/LoginScreen';
+import PinCodeScreen from '../screens/PinCodeScreen/PinCodeScreen';
 import HomeScreen from '../screens/HomeScreen/HomeScreen';
 import DetailScreen from '../screens/DetailScreen/DetailScreen';
 import SettingScreen from '../screens/SettingScreen/SettingScreen';
-import { AsyncStorage } from 'react-native'
+import SearchScreen from '../screens/SearchScreen/SearchScreen';
+import FingerPrintScreenAndroid from '../screens/FingerPrintScreen/FingerPrintScreenAndroid';
+import { TouchableHighlight } from 'react-native'
 import { createSwitchNavigator, createAppContainer } from "react-navigation";
 import { createBottomTabNavigator } from 'react-navigation-tabs'
 import {
     createStackNavigator
 } from 'react-navigation-stack';
-import { Button, Text, Icon, View, Right } from 'native-base'
+import { Icon } from 'react-native-elements'
+
+import { Icon as NBIcon } from 'native-base'
+
+const NewTripFormStack = createStackNavigator(
+    {
+        NewTrip: {
+            screen: NewTripScreen,
+            navigationOptions: ({ navigation }): any => {
+                return {
+                    title: "New Trip",
+                    headerRight: (
+                        <Icon color="gray" underlayColor="grey" name="close" containerStyle={{ padding: 15 }} onPress={() => navigation.pop()} />
+                    ),
+                }
+            }
+        },
+        Search: {
+            screen: SearchScreen,
+            navigationOptions: ({ navigation }): any => {
+                const { params } = navigation.state
+                return {
+                    title: `Search ${params}`
+                }
+            }
+        }
+    },
+    {
+        mode: 'modal',
+        defaultNavigationOptions: {
+            headerStyle: {
+                backgroundColor: '#FFFFFF',
+            },
+            headerTintColor: '#232127',
+        },
+        navigationOptions: ({ navigation }: any) => {
+            return {
+                tabBarVisible: false,
+            };
+        }
+    }
+);
 
 const HomeStack = createStackNavigator(
     {
         Home: {
             screen: HomeScreen,
-            navigationOptions: ({ navigation }): any => {
-                return {
-                    title: "HOME"
-                }
-            }
+            params: { mode: 'normal' }
         },
         Detail: {
-            screen: DetailScreen
+            screen: DetailScreen,
+        },
+        NewTrip: {
+            screen: NewTripFormStack,
+            navigationOptions: { header: null },
         }
     },
     {
+        mode: "modal",
         defaultNavigationOptions: {
             headerStyle: {
-                backgroundColor: '#3F51B5',
+                backgroundColor: '#FFFFFF',
             },
-            headerTintColor: '#fff',
+            headerTintColor: '#232127',
             headerTitleStyle: {
                 fontWeight: 'bold'
             },
@@ -45,7 +91,7 @@ const HomeStack = createStackNavigator(
             }
 
             return {
-                tabBarVisible,
+                tabBarVisible
             };
         }
     }
@@ -53,20 +99,23 @@ const HomeStack = createStackNavigator(
 
 const NewTripStack = createStackNavigator(
     {
-        NewTrip: {
-            screen: NewTripScreen
+        LandingNewTrip: {
+            screen: LandingNewTripScreen,
         }
     },
     {
         mode: 'modal',
         headerMode: 'none',
+        defaultNavigationOptions: {
+            headerTintColor: 'black'
+        },
         navigationOptions: ({ navigation }: any) => {
             return {
-                tabBarVisible: false
+                tabBarVisible: false,
             };
         }
     }
-);
+)
 
 const SettingStack = createStackNavigator(
     {
@@ -92,7 +141,11 @@ const SettingStack = createStackNavigator(
 )
 
 const AuthStack = createStackNavigator(
-    { Signin: LoginScreen },
+    { 
+        Signin: LoginScreen,
+        PinCode: PinCodeScreen,
+        FingerPrintAndroid: FingerPrintScreenAndroid
+    },
     {
         headerMode: 'none',
         navigationOptions: {
@@ -107,17 +160,17 @@ const TabNavigator = createBottomTabNavigator(
             navigationOptions: {
                 tabBarLabel: 'Home',
                 tabBarIcon: ({ tintColor }) => (
-                    <Icon name="ios-home" fontSize={22} style={{ color: tintColor }} />
+                    <NBIcon name="ios-home" fontSize={22} style={{ color: tintColor }} />
                 ),
             }
         },
-        NewTrip: {
+        LandingNewTrip: {
             screen: NewTripStack,
             navigationOptions: {
                 tabBarLabel: 'New Trip',
                 tabBarIcon: ({ tintColor }) => (
-                    <Icon name="ios-add" fontSize={22} style={{ color: tintColor }} />
-                ),
+                    <NBIcon name="ios-add" fontSize={22} style={{ color: tintColor }} />
+                )
             }
         },
         Setting: {
@@ -125,10 +178,35 @@ const TabNavigator = createBottomTabNavigator(
             navigationOptions: {
                 tabBarLabel: 'Setting',
                 tabBarIcon: ({ tintColor }) => (
-                    <Icon name="ios-cog" fontSize={22} style={{ color: tintColor }} />
+                    <NBIcon name="ios-cog" fontSize={22} style={{ color: tintColor }} />
                 ),
             }
         }
+    },
+    {
+        defaultNavigationOptions: {
+            // other tab navigation options...
+            tabBarOnPress: ({ navigation, defaultHandler }) => {
+                if (navigation.state.key === 'LandingNewTrip') {
+                    navigation.navigate('NewTrip');
+                } else {
+                    defaultHandler();
+                }
+            }
+        },
+        tabBarOptions: {
+            showIcon: true,
+            showLabel: true,
+            activeTintColor: '#533AAF',
+            inactiveTintColor: '#707070',
+            style: {
+                width: '100%',
+                height: 70,
+            },
+            tabStyle: {
+                padding: 10,
+            },
+        },
     }
 )
 

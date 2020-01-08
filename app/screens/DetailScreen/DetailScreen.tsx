@@ -12,14 +12,10 @@ interface Props {
 }
 
 class DetailScreen extends Component<Props> {
-  public static navigationOptions = {
-    title: 'DETAIL'
-  };
-
   render() {
     return (
       <View style={styles.container}>
-        <Text>This is the DetailScreen.</Text>
+        
       </View>
     );
   }

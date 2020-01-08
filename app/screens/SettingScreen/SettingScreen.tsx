@@ -26,9 +26,10 @@ var options = {
   }
 };
 
-const mapStateToProps = (state: any) => {
-  return { ...state, SettingScreenState: state.SettingScreenState }
-}
+const mapStateToProps = (reduxState: any) => ({
+  ...reduxState,
+  SettingScreenState: reduxState.SettingScreenState
+})
 
 
 class SettingScreen extends Component<any> {
@@ -78,7 +79,7 @@ class SettingScreen extends Component<any> {
         onPress: this._logout
       },
     ]
-    console.log(this.props)
+
     return (
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.container1}>

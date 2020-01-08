@@ -38,6 +38,8 @@ target 'reactntstarter' do
 
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
+  pod 'TouchID', :path => '../node_modules/react-native-touch-id'
+
   target 'reactntstarterTests' do
     inherit! :search_paths
     # Pods for testing

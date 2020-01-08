@@ -1,28 +1,28 @@
-import { AsyncStorage } from 'react-native';
-import ILoginScreenStateDTO from '../../dtos/LoginScreenDTO';
-import ActionType from '../../redux/ActionType';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export class LoginScreenAction {
-    Login = (token: string) => (dispatch: any, getState: any) => {
+    signIn = (tokens: any, accessTokens: any, userInfo: any) => async (dispatch: any, getState: any) => {
+        const AuthState = getState().AuthState;
         try {
-            AsyncStorage.setItem('accessToken', token)
-                .then((data) => {
-                    dispatch({
-                        type: ActionType.LOGIN_SUCCESS,
-                        payload: {
-                            isLoggedIn: true
-                        }
-                    });
-                })
-                .catch((err) => {
-                    console.log('ERROR: ', err)
-                    dispatch({ type: ActionType.NO_CHANGE, payload: {} })
-                })
+            await AsyncStorage.setItem('userToken', tokens.accessToken);
+            await AsyncStorage.setItem('userId', tokens.userId);
+            await AsyncStorage.setItem('accessToken', accessTokens.accessToken);
+
+            const newAuthState = {
+                ...AuthState,
+                userInfo: userInfo,
+                userToken: tokens.accessToken,
+                userId: tokens.userId,
+                accessToken: accessTokens.accessToken
+            }
+
+            dispatch({ type: "update", payload: newAuthState })
         } catch (error) {
-            console.log('ERROR: ', error)
-            dispatch({ type: ActionType.NO_CHANGE, payload: {} })
+            await AsyncStorage.removeItem('userToken', tokens.accessToken);
+            await AsyncStorage.removeItem('userId', tokens.userId);
+            await AsyncStorage.removeItem('accessToken', accessTokens.accessToken);
         }
     }
 }
 
-export default new LoginScreenAction();
+export default new LoginScreenAction;

@@ -1,8 +1,6 @@
 //import { createStore, applyMiddleware, compose, combineReducers } from "redux";
 import { createStore, applyMiddleware, combineReducers } from "redux";
 import CreateReducer from "./CreateReducer";
-import { reducer as formreducer } from "redux-form" // ที่ต้องใส as formreducer เพราะบาง module มีชื่อโหล
-import mNote from "../models/mNote";
 import mLoginScreen from "../models/mLoginScreenState";
 import mHomeScreen from "../models/mHomeScreenState";
 import mSearchScreen from "../models/mSearchScreen";

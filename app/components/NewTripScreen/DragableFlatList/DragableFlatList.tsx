@@ -15,7 +15,7 @@ class DraggableFlatListComponent extends Component<any> {
                     alignItems: 'center',
                     justifyContent: 'center'
                 }}
-                //onLongPress={drag}
+            //onLongPress={drag}
             >
                 <Text style={{
                     fontWeight: 'bold',
@@ -28,14 +28,12 @@ class DraggableFlatListComponent extends Component<any> {
 
     render() {
         return (
-            <View style={{ flex: 1 }}>
-                <DraggableFlatList
-                    data={this.props.data}
-                    renderItem={this.renderItem}
-                    keyExtractor={(index: any) => `draggable-item-${index}`}
-                    onDragEnd={this.props.handleDragEnd}
-                />
-            </View>
+            <DraggableFlatList
+                data={this.props.data}
+                renderItem={this.renderItem}
+                keyExtractor={(index: any) => `draggable-item-${index}`}
+                onDragEnd={this.props.handleDragEnd}
+            />
         )
     }
 }

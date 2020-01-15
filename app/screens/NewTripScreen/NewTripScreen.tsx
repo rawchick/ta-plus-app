@@ -56,7 +56,6 @@ class NewTripScreen extends Component<any, any> {
     }
 
     clearState() {
-        console.log("test")
         this.props.clearNewTripState()
         this.props.navigation.popToTop()
     }
@@ -125,34 +124,8 @@ class NewTripScreen extends Component<any, any> {
         this.props.navigation.popToTop()
     }
 
-    renderDestinationItem = ({ item, index, drag, isActive }: any) => {
-        return (
-            <TouchableOpacity
-                style={{
-                    width: '100%',
-                    height: 50,
-                    borderBottomWidth: 1,
-                    borderBottomColor: "#AEB3B8"
-                }}
-                onPress={() => this.removeDestinationItem(item.locationId)}
-            >
-                <View style={{ padding: 10, flexDirection: 'row', justifyContent: "space-between" }}>
-                    <Icon name="remove-circle" iconStyle={{ color: "#D9534F", paddingLeft: 10 }} onPress={() => console.log()} />
-                    <Text style={{
-                        color: 'black',
-                        fontSize: 18,
-                        marginLeft: 10,
-                        flex: 1,
-                        textAlign: "left"
-                    }}>{item.title}</Text>
-                    <Icon name="menu" iconStyle={{ color: "#AEB3B8", paddingRight: 10 }} />
-                </View>
-            </TouchableOpacity>
-        )
-    }
-
     render() {
-        console.log(this.props.NewTripScreenState.tripDestinationDisplay)
+        const { NewTripScreenState } = this.props
         return (
             <Container style={{ flex: 1, justifyContent: 'flex-start', borderTopWidth: 2, borderTopColor: "#1C7CD5" }}>
                 <Content>
@@ -174,7 +147,7 @@ class NewTripScreen extends Component<any, any> {
                                     placeholderStyle={{ color: "#AEB3B8" }}
                                     placeholderIconColor="#007aff"
                                     style={{ width: undefined, marginLeft: 20, borderTopWidth: 2, borderLeftWidth: 2, borderRightWidth: 2, borderBottomWidth: 2 }}
-                                    selectedValue={this.props.NewTripScreenState.trTravelType}
+                                    selectedValue={NewTripScreenState.trTravelType}
                                     onValueChange={this.onTravelTypeChange.bind(this)}
                                 >
                                     <Picker.Item label="Travel Type" color="#AEB3B8" value={undefined} />
@@ -183,17 +156,28 @@ class NewTripScreen extends Component<any, any> {
                                 </Picker>
                             </Item>
                             <Item rounded style={{ marginBottom: 15, height: 50, borderTopWidth: 2, borderLeftWidth: 2, borderRightWidth: 2, borderBottomWidth: 2 }} onPress={() => this._goToSearchScreen('FromLocation')}>
-                                <Input style={{ marginLeft: 20 }} placeholderTextColor='#AEB3B8' placeholder='From' disabled value={this.props.NewTripScreenState.trFromText} />
+                                <Input style={{ marginLeft: 20 }} placeholderTextColor='#AEB3B8' placeholder='From' disabled value={NewTripScreenState.trFromText} />
                                 <Icon name="search" color="#AEB3B8" containerStyle={{ paddingRight: 15 }}></Icon>
                             </Item>
                             <Item rounded style={{ marginBottom: 15, flexDirection: 'row', flexWrap: 'wrap', borderTopWidth: 2, borderLeftWidth: 2, borderRightWidth: 2, borderBottomWidth: 2 }}>
                                 {
-                                    this.props.NewTripScreenState.tripDestination ?
+                                    NewTripScreenState.tripDestination ?
                                         <View style={{ flex: 1 }}>
-                                            <DraggableFlatList
-                                                data={this.props.NewTripScreenState.tripDestinationDisplay}
-                                                handleDragEnd={() => console.log("Drag end")}
-                                            />
+                                            {
+                                                NewTripScreenState.tripDestinationDisplay.map((item: any) =>
+                                                    <View style={{ padding: 10, flexDirection: 'row', justifyContent: "space-between" }}>
+                                                        <Icon name="remove-circle" iconStyle={{ color: "#D9534F", paddingLeft: 10 }} onPress={() => this.removeDestinationItem(item.locationId)} />
+                                                        <Text style={{
+                                                            color: 'black',
+                                                            fontSize: 18,
+                                                            marginLeft: 10,
+                                                            flex: 1,
+                                                            textAlign: "left"
+                                                        }}>{item.title}</Text>
+                                                        <Icon name="menu" iconStyle={{ color: "#AEB3B8", paddingRight: 10 }} />
+                                                    </View>
+                                                )
+                                            }
                                             <TouchableOpacity style={{
                                                 borderTopWidth: 1,
                                                 borderColor: "#AEB3B8",
@@ -218,11 +202,11 @@ class NewTripScreen extends Component<any, any> {
                                 }
                             </Item>
                             <Item rounded style={{ marginBottom: 15, height: 50, borderTopWidth: 2, borderLeftWidth: 2, borderRightWidth: 2, borderBottomWidth: 2 }} onPress={() => this.openDatePicker('date', 'isTravellingDatePickerShow')}>
-                                <Input style={{ marginLeft: 20 }} placeholderTextColor='#AEB3B8' placeholder='Travelling Date' disabled value={this.props.NewTripScreenState.isTravellingDateChanged ? Moment(this.props.NewTripScreenState.trTravellingDate).format('DD/MM/YYYY') : this.props.NewTripScreenState.trTravellingDate} />
+                                <Input style={{ marginLeft: 20 }} placeholderTextColor='#AEB3B8' placeholder='Travelling Date' disabled value={NewTripScreenState.isTravellingDateChanged ? Moment(NewTripScreenState.trTravellingDate).format('DD/MM/YYYY') : NewTripScreenState.trTravellingDate} />
                                 <Icon type="ionicon" name="ios-calendar" color="#AEB3B8" containerStyle={{ paddingRight: 15 }}></Icon>
                             </Item>
                             <Item rounded style={{ marginBottom: 15, height: 50, borderTopWidth: 2, borderLeftWidth: 2, borderRightWidth: 2, borderBottomWidth: 2 }} onPress={() => this.openDatePicker('date', 'isReturnDatePickerShow')}>
-                                <Input style={{ marginLeft: 20 }} placeholderTextColor='#AEB3B8' placeholder='Return Date' disabled value={this.props.NewTripScreenState.isReturnDateChanged ? Moment(this.props.NewTripScreenState.trReturnDate).format('DD/MM/YYYY') : this.props.NewTripScreenState.trReturnDate} />
+                                <Input style={{ marginLeft: 20 }} placeholderTextColor='#AEB3B8' placeholder='Return Date' disabled value={NewTripScreenState.isReturnDateChanged ? Moment(NewTripScreenState.trReturnDate).format('DD/MM/YYYY') : NewTripScreenState.trReturnDate} />
                                 <Icon type="ionicon" name="ios-calendar" color="#AEB3B8" containerStyle={{ paddingRight: 15 }}></Icon>
                             </Item>
                         </Form>
@@ -236,8 +220,8 @@ class NewTripScreen extends Component<any, any> {
                     </View>
                     <View style={{ margin: 20, flexDirection: 'row', flexWrap: 'wrap' }}>
                         {
-                            this.props.NewTripScreenState.tripClearanceStaffDisplay ?
-                                this.props.NewTripScreenState.tripClearanceStaffDisplay.map((item: any) =>
+                            NewTripScreenState.tripClearanceStaffDisplay ?
+                                NewTripScreenState.tripClearanceStaffDisplay.map((item: any) =>
                                     <TouchableHighlight
                                         underlayColor="#707070"
                                         style={{
@@ -282,14 +266,14 @@ class NewTripScreen extends Component<any, any> {
                         margin: 20, marginBottom: 30
                     }} onPress={this.createNewTrip}><Text style={{ textAlign: 'center', color: "#FFFFFF" }}> CREATE </Text></Button>
 
-                    {this.props.NewTripScreenState.isReturnDatePickerShow && <DateTimePicker value={this.props.NewTripScreenState.trReturnDate}
-                        mode={this.props.NewTripScreenState.mode}
+                    {NewTripScreenState.isReturnDatePickerShow && <DateTimePicker value={NewTripScreenState.trReturnDate}
+                        mode={NewTripScreenState.mode}
                         is24Hour={true}
                         display="default"
                         onChange={this.setReturnDate} />
                     }
-                    {this.props.NewTripScreenState.isTravellingDatePickerShow && <DateTimePicker value={this.props.NewTripScreenState.trTravellingDate}
-                        mode={this.props.NewTripScreenState.mode}
+                    {NewTripScreenState.isTravellingDatePickerShow && <DateTimePicker value={NewTripScreenState.trTravellingDate}
+                        mode={NewTripScreenState.mode}
                         is24Hour={true}
                         display="default"
                         onChange={this.setTravellingDate} />

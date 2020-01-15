@@ -5,11 +5,11 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>reactntstarter</string>
+	<string>taplusapp</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.reactntstarter</string>
+	<string>com.taplusapp</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -29,7 +29,7 @@
 			<string>AzureAuth</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.reactntstarter</string>
+				<string>com.taplusapp</string>
 			</array>
 		</dict>
 	</array>

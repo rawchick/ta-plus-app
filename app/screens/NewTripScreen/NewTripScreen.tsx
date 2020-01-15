@@ -165,7 +165,7 @@ class NewTripScreen extends Component<any, any> {
                                         <View style={{ flex: 1 }}>
                                             {
                                                 NewTripScreenState.tripDestinationDisplay.map((item: any) =>
-                                                    <View style={{ padding: 10, flexDirection: 'row', justifyContent: "space-between" }}>
+                                                    <View style={{ padding: 10, flexDirection: 'row', justifyContent: "space-between" }} key={item.locationId}>
                                                         <Icon name="remove-circle" iconStyle={{ color: "#D9534F", paddingLeft: 10 }} onPress={() => this.removeDestinationItem(item.locationId)} />
                                                         <Text style={{
                                                             color: 'black',

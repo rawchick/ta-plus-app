@@ -29,9 +29,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "reactntstarter.app"
-               BlueprintName = "reactntstarter"
-               ReferencedContainer = "container:reactntstarter.xcodeproj">
+               BuildableName = "taplusapp.app"
+               BlueprintName = "taplusapp"
+               ReferencedContainer = "container:taplusapp.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -43,9 +43,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "reactntstarterTests.xctest"
-               BlueprintName = "reactntstarterTests"
-               ReferencedContainer = "container:reactntstarter.xcodeproj">
+               BuildableName = "taplusappTests.xctest"
+               BlueprintName = "taplusappTests"
+               ReferencedContainer = "container:taplusapp.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -61,9 +61,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "reactntstarterTests.xctest"
-               BlueprintName = "reactntstarterTests"
-               ReferencedContainer = "container:reactntstarter.xcodeproj">
+               BuildableName = "taplusappTests.xctest"
+               BlueprintName = "taplusappTests"
+               ReferencedContainer = "container:taplusapp.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>

@@ -1,6 +1,6 @@
 import styles from './styles';
 import React, { Component } from 'react';
-import { Text, View, Keyboard, TouchableHighlight, TextInput, Platform } from 'react-native';
+import { Text, View, Keyboard, TouchableHighlight, TextInput, Platform, TouchableOpacity } from 'react-native';
 import { Container, Form, Content, Item, Input, Picker, DatePicker, Button } from 'native-base'
 import { Icon } from 'react-native-elements'
 import { connect } from 'react-redux'
@@ -9,7 +9,6 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import Moment from 'moment';
 import ActionSheet from 'react-native-action-sheet';
 import DraggableFlatList from '../../components/NewTripScreen/DragableFlatList/DragableFlatList'
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const mapStateToProps = (reduxState: any) => ({
     ...reduxState,
@@ -165,7 +164,7 @@ class NewTripScreen extends Component<any, any> {
                                         <View style={{ flex: 1 }}>
                                             {
                                                 NewTripScreenState.tripDestinationDisplay.map((item: any) =>
-                                                    <View style={{ padding: 10, flexDirection: 'row', justifyContent: "space-between" }} key={item.locationId}>
+                                                    <View style={{ padding: 10, flexDirection: 'row', justifyContent: "space-between", borderBottomWidth: 1, borderColor: "#AEB3B8" }} key={item.locationId}>
                                                         <Icon name="remove-circle" iconStyle={{ color: "#D9534F", paddingLeft: 10 }} onPress={() => this.removeDestinationItem(item.locationId)} />
                                                         <Text style={{
                                                             color: 'black',

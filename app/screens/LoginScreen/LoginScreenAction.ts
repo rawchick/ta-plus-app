@@ -1,26 +1,25 @@
 import AsyncStorage from '@react-native-community/async-storage';
+import { iAuthState } from '../../models/mAuthState'
 
 export class LoginScreenAction {
-    signIn = (tokens: any, accessTokens: any, userInfo: any) => async (dispatch: any, getState: any) => {
-        const AuthState = getState().AuthState;
+    signIn = (tokens: any, userInfo: any) => async (dispatch: any, getState: any) => {
+        const AuthState: iAuthState = getState().AuthState;
         try {
-            await AsyncStorage.setItem('userToken', tokens.accessToken);
-            await AsyncStorage.setItem('userId', tokens.userId);
-            await AsyncStorage.setItem('accessToken', accessTokens.accessToken);
+            await AsyncStorage.setItem('userTokens', JSON.stringify(tokens));
+            await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
 
-            const newAuthState = {
+            const newAuthState: iAuthState = {
                 ...AuthState,
+                userTokens: tokens,
                 userInfo: userInfo,
-                userToken: tokens.accessToken,
-                userId: tokens.userId,
-                accessToken: accessTokens.accessToken
             }
 
             dispatch({ type: "update", payload: newAuthState })
         } catch (error) {
-            await AsyncStorage.removeItem('userToken', tokens.accessToken);
-            await AsyncStorage.removeItem('userId', tokens.userId);
-            await AsyncStorage.removeItem('accessToken', accessTokens.accessToken);
+            console.log("error >>>> ", error)
+            await AsyncStorage.removeItem('userTokens');
+            await AsyncStorage.removeItem('userInfo');
+            dispatch({ type: "default", payload: {} })
         }
     }
 }

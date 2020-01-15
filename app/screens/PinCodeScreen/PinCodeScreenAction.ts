@@ -1,69 +1,71 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import mPinCode from '../../models/mPinCode'
+import { iPinCodeScreenState } from '../../models/mPinCodeScreenState'
 
 export class PinCodeScreenAction {
     toggleFingerPrintPopup = (flag: boolean) => (dispatch: any, getState: any) => {
-        const PinCodeScreenState = getState().PinCodeScreenState;
+        const PinCodeScreenState: iPinCodeScreenState = getState().PinCodeScreenState;
         try {
-            const newPinCodeScreenState = {
+            const newState: iPinCodeScreenState = {
                 ...PinCodeScreenState,
                 fingerPrintPopupShowed: flag
             }
 
-            dispatch({ type: "update", payload: newPinCodeScreenState })
+            dispatch({ type: "update", payload: newState })
         } catch (error) {
-            console.log('ERROR: ', error)
-            dispatch({ type: "clear", payload: {} })
+            console.log('error >>>>>', error)
+            dispatch({ type: "default", payload: {} })
         }
     }
 
-    setPinCode = (pinCode: any) => (dispatch: any, getState: any) => {
-        const PinCodeScreenState = getState().PinCodeScreenState;
+    setPinCode = (pinCode: string) => (dispatch: any, getState: any) => {
+        const PinCodeScreenState: iPinCodeScreenState = getState().PinCodeScreenState;
         try {
-            const newPinCodeScreenState = {
+            const newState: iPinCodeScreenState = {
                 ...PinCodeScreenState,
                 pinCode: pinCode,
-                pinCodeErrMessage: null,
-                mode: "confirm"
+                pinCodeHeaderMessage: "Please confirm your pin",
+                pinCodeErrorMessage: null
             }
 
-            dispatch({ type: "update", payload: newPinCodeScreenState })
+            console.log(newState)
+
+            dispatch({ type: "update", payload: newState })
         } catch (error) {
             console.log('ERROR: ', error)
-            dispatch({ type: "clear", payload: {} })
+            dispatch({ type: "default", payload: {} })
         }
     }
 
-    confirmPinCode = (pinCode: any) => async (dispatch: any, getState: any) => {
-        const PinCodeScreenState = getState().PinCodeScreenState;
+    confirmPinCode = (pinCode: string) => async (dispatch: any, getState: any) => {
+        const PinCodeScreenState: iPinCodeScreenState = getState().PinCodeScreenState;
         try {
-            const newPinCodeScreenState = {
+            const newState: iPinCodeScreenState = {
                 ...PinCodeScreenState,
                 pinCodeConfirmation: pinCode,
-                pinCodeSet: true,
-                pinCodeErrMessage: null
+                pinCodeErrorMessage: null
             }
 
             await AsyncStorage.setItem('pinCode', pinCode);
-            dispatch({ type: "update", payload: newPinCodeScreenState })
+            dispatch({ type: "update", payload: newState })
         } catch (error) {
-            console.log('ERROR: ', error)
-            dispatch({ type: "clear", payload: {} })
+            console.log('error >>>>>', error)
+            await AsyncStorage.removeItem('pinCode');
+            dispatch({ type: "default", payload: {} })
         }
     }
 
-    updateErrMessage = (message: any) => (dispatch: any, getState: any) => {
-        const PinCodeScreenState = getState().PinCodeScreenState;
+    setPinCodeError = (message: any) => (dispatch: any, getState: any) => {
+        const PinCodeScreenState: iPinCodeScreenState = getState().PinCodeScreenState;
         try {
-            const newPinCodeScreenState = {
+            const newState: iPinCodeScreenState = {
                 ...PinCodeScreenState,
-                pinCodeErrMessage: message
+                pinCodeErrorMessage: message
             }
 
-            dispatch({ type: "update", payload: newPinCodeScreenState })
+            dispatch({ type: "update", payload: newState })
         } catch (error) {
-            console.log('ERROR: ', error)
-            dispatch({ type: "clear", payload: {} })
+            console.log('error >>>>>', error)
+            dispatch({ type: "default", payload: {} })
         }
     }
 }

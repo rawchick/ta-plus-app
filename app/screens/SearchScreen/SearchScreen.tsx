@@ -43,31 +43,27 @@ class SearchScreen extends Component<any, any> {
 
   componentDidMount() {
     const searchType = this.props.navigation.state.params
-    if (searchType === 'Traveler') {
+    if (searchType === 'Traveler' || searchType === 'ClearanceStaff') {
       this.props.fetchUser()
-    } else if (searchType === 'FromLocation') {
-      this.props.fetchPlace()
-    } else if (searchType === 'DestinationLocation') {
+    } else if (searchType === 'FromLocation' || searchType === 'DestinationLocation') {
       this.props.fetchPlace()
     }
   }
 
   onRefresh() {
     const searchType = this.props.navigation.state.params
-    if (searchType === 'Traveler') {
+    if (searchType === 'Traveler' || searchType === 'ClearanceStaff') {
       this.props.fetchUser()
-    } else if (searchType === 'Location') {
+    } else if (searchType === 'FromLocation' || searchType === 'DestinationLocation') {
       this.props.fetchPlace()
     }
   }
 
   search(text: any) {
     const searchType = this.props.navigation.state.params
-    if (searchType === 'Traveler') {
+    if (searchType === 'Traveler' || searchType === 'ClearanceStaff') {
       this.props.fetchUser(text)
-    } else if (searchType === 'FromLocation') {
-      this.props.fetchPlace(text)
-    } else if (searchType === 'DestinationLocation') {
+    } else if (searchType === 'FromLocation' || searchType === 'DestinationLocation') {
       this.props.fetchPlace(text)
     }
   }
@@ -79,10 +75,13 @@ class SearchScreen extends Component<any, any> {
     } else if (searchType === 'FromLocation') {
       this.props.setFromLocationData(data)
     } else if (searchType === 'DestinationLocation') {
-      this.props.setDestinationLocationData(data)
+      this.props.stackDestination(data)
+    } else if (searchType === 'ClearanceStaff') {
+      this.props.stackClearanceStaff(data)
     }
 
-    this.props.navigation.popToTop()
+    this.props.clearList()
+    this.props.navigation.navigate('NewTrip', { update: true })
   }
 
   render() {
@@ -119,8 +118,8 @@ class SearchScreen extends Component<any, any> {
                   leftAvatar={{ source: { uri: "https://toppng.com/uploads/preview/roger-berry-avatar-placeholder-11562991561rbrfzlng6h.png" } }}
                   containerStyle={{ backgroundColor: '#fff', marginLeft: 10, borderTopWidth: 1 }}
                   key={item.id}
-                  title={ searchType === 'Traveler' ? item.firstName + ' ' + item.sureName : item.title}
-                  subtitle={ searchType === 'Traveler' ? item.jobTitle : item.subTitle}
+                  title={searchType === 'Traveler' || searchType === 'ClearanceStaff' ? item.firstName + ' ' + item.sureName : item.title}
+                  subtitle={searchType === 'Traveler' || searchType === 'ClearanceStaff' ? item.jobTitle : item.subTitle}
                   onPress={() => this._getData(item)}
                 />
               )}

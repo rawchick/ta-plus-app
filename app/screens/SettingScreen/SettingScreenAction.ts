@@ -1,15 +1,16 @@
-import { AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export class SettingScreenAction {
     Logout = () => async (dispatch: any, getState: any) => {
         try {
-            await AsyncStorage.removeItem('userToken');
-            await AsyncStorage.removeItem('userId');
+            await AsyncStorage.removeItem('userTokens');
             await AsyncStorage.removeItem('userInfo');
-            await AsyncStorage.removeItem('accessToken');
+            await AsyncStorage.removeItem('accessTokens');
             await AsyncStorage.removeItem('pinCode');
+            dispatch({ type: "clear", payload: {} })
         } catch (err) {
-            console.log('ERROR: ', err)
+            console.log('error >>>>>', err)
+            dispatch({ type: "clear", payload: {} })
         }
     }
 }

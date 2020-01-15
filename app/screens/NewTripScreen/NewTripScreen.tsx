@@ -1,17 +1,24 @@
 import styles from './styles';
 import React, { Component } from 'react';
-import { Text, View, Keyboard, TouchableHighlight, TextInput } from 'react-native';
+import { Text, View, Keyboard, TouchableHighlight, TextInput, Platform } from 'react-native';
 import { Container, Form, Content, Item, Input, Picker, DatePicker, Button } from 'native-base'
 import { Icon } from 'react-native-elements'
 import { connect } from 'react-redux'
 import NewTripScreenAction from './NewTripScreenAction'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Moment from 'moment';
+import ActionSheet from 'react-native-action-sheet';
+import DraggableFlatList from '../../components/NewTripScreen/DragableFlatList/DragableFlatList'
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const mapStateToProps = (reduxState: any) => ({
     ...reduxState,
     NewTripScreenState: reduxState.NewTripScreenState
 })
+
+const ASMenu = [
+    'Remove'
+]
 
 class NewTripScreen extends Component<any, any> {
     constructor(props: any) {
@@ -23,6 +30,35 @@ class NewTripScreen extends Component<any, any> {
         this.setReturnDate = this.setReturnDate.bind(this);
         this.openDatePicker = this.openDatePicker.bind(this)
         this._goToSearchScreen = this._goToSearchScreen.bind(this)
+        this.tripObjectiveOnchange = this.tripObjectiveOnchange.bind(this)
+        this.createNewTrip = this.createNewTrip.bind(this)
+        this.removeDestinationItem = this.removeDestinationItem.bind(this)
+        this.onClearanceStaffItemPress = this.onClearanceStaffItemPress.bind(this)
+    }
+
+    static navigationOptions = ({ navigation }: any) => {
+        return {
+            title: "NEW TRIP",
+            headerRight: (
+                <Icon color="gray" underlayColor="grey" name="close" containerStyle={{ padding: 15 }} onPress={() => navigation.state.params.handleClearForm()} />
+            ),
+            headerLeft: () => (<View></View>),
+            headerTitleStyle: {
+                textAlign: 'center',
+                flexGrow: 1,
+                fontWeight: "bold"
+            }
+        };
+    }
+
+    componentDidMount = () => {
+        this.props.navigation.setParams({ handleClearForm: this.clearState.bind(this) });
+    }
+
+    clearState() {
+        console.log("test")
+        this.props.clearNewTripState()
+        this.props.navigation.popToTop()
     }
 
     onValueChange(value: string) {
@@ -31,60 +67,162 @@ class NewTripScreen extends Component<any, any> {
         });
     }
 
+    tripObjectiveOnchange(text: any) {
+        this.props.setTripObjective(text)
+    }
+
     setReturnDate(event: any, newDate: any) {
         if (newDate !== undefined) {
-            this.props.setReturnDate(newDate);
+            this.props.setReturnDate(event, newDate);
         }
     }
 
     setTravellingDate(event: any, newDate: any) {
         if (newDate !== undefined) {
-            this.props.setTravellingDate(newDate);
+            this.props.setTravellingDate(event, newDate);
         }
     }
 
-    _goToSearchScreen(topic: "Traveler" | "FromLocation" | "DestinationLocation" | "Staff") {
+    _goToSearchScreen(topic: "Traveler" | "FromLocation" | "DestinationLocation" | "ClearanceStaff") {
         Keyboard.dismiss()
         this.props.navigation.navigate("Search", topic)
+    }
+
+    removeDestinationItem = (locationId: any) => {
+        ActionSheet.showActionSheetWithOptions({
+            options: ASMenu,
+            tintColor: 'blue'
+        },
+            (buttonIndex) => {
+                if (buttonIndex === 0) {
+                    this.props.removeDestinationItem(parseInt(locationId))
+                }
+            });
     }
 
     openDatePicker(mode: string, field: string) {
         this.props.toggleShowDatePicker(true, mode, field);
     }
 
-    render() {
-        console.log(this.props.NewTripScreenState)
+    onTravelTypeChange(value: string | undefined) {
+        this.props.setTravelType(value);
+    }
+
+    onClearanceStaffItemPress(id: any) {
+        ActionSheet.showActionSheetWithOptions({
+            options: ASMenu,
+            tintColor: 'blue'
+        },
+            (buttonIndex) => {
+                if (buttonIndex === 0) {
+                    this.props.removeClearanceStaffItem(id)
+                }
+            });
+    }
+
+    createNewTrip() {
+        this.props.createTrip()
+        this.props.navigation.popToTop()
+    }
+
+    renderDestinationItem = ({ item, index, drag, isActive }: any) => {
         return (
-            <Container style={{ flex: 1, justifyContent: 'flex-start', borderTopWidth: 2, borderTopColor: "#533AAF" }}>
+            <TouchableOpacity
+                style={{
+                    width: '100%',
+                    height: 50,
+                    borderBottomWidth: 1,
+                    borderBottomColor: "#AEB3B8"
+                }}
+                onPress={() => this.removeDestinationItem(item.locationId)}
+            >
+                <View style={{ padding: 10, flexDirection: 'row', justifyContent: "space-between" }}>
+                    <Icon name="remove-circle" iconStyle={{ color: "#D9534F", paddingLeft: 10 }} onPress={() => console.log()} />
+                    <Text style={{
+                        color: 'black',
+                        fontSize: 18,
+                        marginLeft: 10,
+                        flex: 1,
+                        textAlign: "left"
+                    }}>{item.title}</Text>
+                    <Icon name="menu" iconStyle={{ color: "#AEB3B8", paddingRight: 10 }} />
+                </View>
+            </TouchableOpacity>
+        )
+    }
+
+    render() {
+        console.log(this.props.NewTripScreenState.tripDestinationDisplay)
+        return (
+            <Container style={{ flex: 1, justifyContent: 'flex-start', borderTopWidth: 2, borderTopColor: "#1C7CD5" }}>
                 <Content>
                     <View style={{ margin: 20, marginBottom: 10 }}>
                         <Form>
-                            <Item rounded style={{ marginBottom: 15, height: 40 }} onPress={() => this._goToSearchScreen('Traveler')}>
-                                <Input style={{ marginLeft: 20 }} placeholder='Traveler' disabled value={this.props.NewTripScreenState.trTravellerName} />
+                            <Item rounded style={{ marginBottom: 15, height: 50, borderTopWidth: 2, borderLeftWidth: 2, borderRightWidth: 2, borderBottomWidth: 2 }} onPress={() => this._goToSearchScreen('Traveler')}>
+                                <Input style={{ marginLeft: 20 }} placeholderTextColor='#AEB3B8' placeholder='Traveler' disabled value={this.props.NewTripScreenState.trTravelerName} />
                                 <Icon name="search" color="#AEB3B8" containerStyle={{ paddingRight: 15 }}></Icon>
                             </Item>
 
-                            <Item rounded style={{ marginBottom: 15, height: 45 }}>
-                                <Input style={{ marginLeft: 20 }} placeholder='Trip Objective' />
+                            <Item rounded style={{ marginBottom: 15, height: 50, borderTopWidth: 2, borderLeftWidth: 2, borderRightWidth: 2, borderBottomWidth: 2 }}>
+                                <Input style={{ marginLeft: 20 }} placeholderTextColor='#AEB3B8' placeholder='Trip Objective' onChangeText={this.tripObjectiveOnchange} />
                             </Item>
-                            <Item rounded style={{ marginBottom: 15, height: 45 }}>
-                                <Input style={{ marginLeft: 20 }} placeholder='Travel Type' />
-                                <Icon type="ionicon" name="ios-arrow-down" color="#AEB3B8" containerStyle={{ paddingRight: 15 }}></Icon>
+                            <Item rounded style={{ marginBottom: 15, height: 50, borderTopWidth: 2, borderLeftWidth: 2, borderRightWidth: 2, borderBottomWidth: 2 }}>
+                                <Picker
+                                    mode="dropdown"
+                                    iosIcon={<Icon name="arrow-down" />}
+                                    placeholder="Travel Type"
+                                    placeholderStyle={{ color: "#AEB3B8" }}
+                                    placeholderIconColor="#007aff"
+                                    style={{ width: undefined, marginLeft: 20, borderTopWidth: 2, borderLeftWidth: 2, borderRightWidth: 2, borderBottomWidth: 2 }}
+                                    selectedValue={this.props.NewTripScreenState.trTravelType}
+                                    onValueChange={this.onTravelTypeChange.bind(this)}
+                                >
+                                    <Picker.Item label="Travel Type" color="#AEB3B8" value={undefined} />
+                                    <Picker.Item label="International" value="200" />
+                                    <Picker.Item label="Domestic" value="201" />
+                                </Picker>
                             </Item>
-                            <Item rounded style={{ marginBottom: 15, height: 45 }} onPress={() => this._goToSearchScreen('FromLocation')}>
-                                <Input style={{ marginLeft: 20 }} placeholder='From' disabled value={this.props.NewTripScreenState.trFromText} />
+                            <Item rounded style={{ marginBottom: 15, height: 50, borderTopWidth: 2, borderLeftWidth: 2, borderRightWidth: 2, borderBottomWidth: 2 }} onPress={() => this._goToSearchScreen('FromLocation')}>
+                                <Input style={{ marginLeft: 20 }} placeholderTextColor='#AEB3B8' placeholder='From' disabled value={this.props.NewTripScreenState.trFromText} />
                                 <Icon name="search" color="#AEB3B8" containerStyle={{ paddingRight: 15 }}></Icon>
                             </Item>
-                            <Item rounded style={{ marginBottom: 15, height: 45 }} onPress={() => this._goToSearchScreen('DestinationLocation')}>
-                                <Input style={{ marginLeft: 20 }} placeholder='Destination' disabled />
-                                <Icon name="add" color="#AEB3B8" containerStyle={{ paddingRight: 15 }}></Icon>
+                            <Item rounded style={{ marginBottom: 15, flexDirection: 'row', flexWrap: 'wrap', borderTopWidth: 2, borderLeftWidth: 2, borderRightWidth: 2, borderBottomWidth: 2 }}>
+                                {
+                                    this.props.NewTripScreenState.tripDestination ?
+                                        <View style={{ flex: 1 }}>
+                                            <DraggableFlatList
+                                                data={this.props.NewTripScreenState.tripDestinationDisplay}
+                                                handleDragEnd={() => console.log("Drag end")}
+                                            />
+                                            <TouchableOpacity style={{
+                                                borderTopWidth: 1,
+                                                borderColor: "#AEB3B8",
+                                                height: 60,
+                                                width: "100%",
+                                                flexDirection: "row",
+                                                justifyContent: "center",
+                                                alignContent: 'center',
+                                                alignItems: 'center'
+                                            }} onPress={() => this._goToSearchScreen('DestinationLocation')}>
+                                                <Icon name="add-circle-outline" color="#AEB3B8" containerStyle={{ paddingRight: 15, marginLeft: 10 }}></Icon>
+                                                <Text style={{ color: '#AEB3B8', fontSize: 16 }}>
+                                                    Add more destination
+                                                </Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                        :
+                                        <>
+                                            <Input style={{ marginLeft: 20 }} placeholderTextColor='#AEB3B8' placeholder='Destination' disabled />
+                                            <Icon name="add" color="#AEB3B8" containerStyle={{ paddingRight: 15, marginLeft: 10 }} onPress={() => this._goToSearchScreen('DestinationLocation')}></Icon>
+                                        </>
+                                }
                             </Item>
-                            <Item rounded style={{ marginBottom: 15, height: 45 }} onPress={() => this.openDatePicker('date', 'isTravellingDatePickerShow')}>
-                                <Input style={{ marginLeft: 20 }} placeholder='Travelling Date' disabled value={this.props.NewTripScreenState.isTravellingDateChanged ? Moment(this.props.NewTripScreenState.trTravellingDate).format('DD/MM/YYYY') : this.props.NewTripScreenState.trTravellingDate} />
+                            <Item rounded style={{ marginBottom: 15, height: 50, borderTopWidth: 2, borderLeftWidth: 2, borderRightWidth: 2, borderBottomWidth: 2 }} onPress={() => this.openDatePicker('date', 'isTravellingDatePickerShow')}>
+                                <Input style={{ marginLeft: 20 }} placeholderTextColor='#AEB3B8' placeholder='Travelling Date' disabled value={this.props.NewTripScreenState.isTravellingDateChanged ? Moment(this.props.NewTripScreenState.trTravellingDate).format('DD/MM/YYYY') : this.props.NewTripScreenState.trTravellingDate} />
                                 <Icon type="ionicon" name="ios-calendar" color="#AEB3B8" containerStyle={{ paddingRight: 15 }}></Icon>
                             </Item>
-                            <Item rounded style={{ marginBottom: 15, height: 45 }} onPress={() => this.openDatePicker('date', 'isReturnDatePickerShow')}>
-                                <Input style={{ marginLeft: 20 }} placeholder='Return Date' disabled value={this.props.NewTripScreenState.isReturnDateChanged ? Moment(this.props.NewTripScreenState.trReturnDate).format('DD/MM/YYYY') : this.props.NewTripScreenState.trReturnDate} />
+                            <Item rounded style={{ marginBottom: 15, height: 50, borderTopWidth: 2, borderLeftWidth: 2, borderRightWidth: 2, borderBottomWidth: 2 }} onPress={() => this.openDatePicker('date', 'isReturnDatePickerShow')}>
+                                <Input style={{ marginLeft: 20 }} placeholderTextColor='#AEB3B8' placeholder='Return Date' disabled value={this.props.NewTripScreenState.isReturnDateChanged ? Moment(this.props.NewTripScreenState.trReturnDate).format('DD/MM/YYYY') : this.props.NewTripScreenState.trReturnDate} />
                                 <Icon type="ionicon" name="ios-calendar" color="#AEB3B8" containerStyle={{ paddingRight: 15 }}></Icon>
                             </Item>
                         </Form>
@@ -96,7 +234,31 @@ class NewTripScreen extends Component<any, any> {
                             Clearance Staff
                         </Text>
                     </View>
-                    <View style={{ margin: 20 }}>
+                    <View style={{ margin: 20, flexDirection: 'row', flexWrap: 'wrap' }}>
+                        {
+                            this.props.NewTripScreenState.tripClearanceStaffDisplay ?
+                                this.props.NewTripScreenState.tripClearanceStaffDisplay.map((item: any) =>
+                                    <TouchableHighlight
+                                        underlayColor="#707070"
+                                        style={{
+                                            width: 70,
+                                            height: 70,
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            backgroundColor: "#fff",
+                                            borderWidth: 6,
+                                            borderRadius: 50,
+                                            borderColor: "#472F92",
+                                            marginLeft: 15,
+                                            marginTop: 15
+                                        }}
+                                        key={item.employeeId}
+                                        onPress={() => this.onClearanceStaffItemPress(item.employeeId)}
+                                    >
+                                        <Text style={{ fontSize: 22, fontWeight: 'bold' }}>{item.shortName}</Text>
+                                    </TouchableHighlight>
+                                ) : null
+                        }
                         <TouchableHighlight style={{
                             width: 70,
                             height: 70,
@@ -104,20 +266,22 @@ class NewTripScreen extends Component<any, any> {
                             alignItems: "center",
                             backgroundColor: "#fff",
                             borderWidth: 6,
-                            borderRadius: 100,
-                            borderColor: "#AEB3B8"
-                        }} onPress={() => this._goToSearchScreen('Staff')} >
+                            borderRadius: 50,
+                            borderColor: "#AEB3B8",
+                            marginLeft: 15,
+                            marginTop: 15
+                        }} onPress={() => this._goToSearchScreen('ClearanceStaff')} >
                             <Icon name="add" size={50} iconStyle={{ color: "#AEB3B8" }} />
                         </TouchableHighlight>
                     </View>
-                    <View style={{ margin: 20, marginBottom: 30 }}>
-                        <Button rounded style={{
-                            justifyContent: "center",
-                            alignItems: "center",
-                            height: 50,
-                            backgroundColor: '#533AAF'
-                        }}><Text style={{ textAlign: 'center', color: "#FFFFFF" }}> CREATE </Text></Button>
-                    </View>
+                    <Button rounded style={{
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: 50,
+                        backgroundColor: '#533AAF',
+                        margin: 20, marginBottom: 30
+                    }} onPress={this.createNewTrip}><Text style={{ textAlign: 'center', color: "#FFFFFF" }}> CREATE </Text></Button>
+
                     {this.props.NewTripScreenState.isReturnDatePickerShow && <DateTimePicker value={this.props.NewTripScreenState.trReturnDate}
                         mode={this.props.NewTripScreenState.mode}
                         is24Hour={true}
@@ -131,7 +295,7 @@ class NewTripScreen extends Component<any, any> {
                         onChange={this.setTravellingDate} />
                     }
                 </Content>
-            </Container>
+            </Container >
         );
     }
 }

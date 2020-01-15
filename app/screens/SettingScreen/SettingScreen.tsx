@@ -2,7 +2,7 @@ import styles from './styles';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { View, TouchableHighlight, ActivityIndicator, ScrollView } from 'react-native';
-import { ThemeProvider, Avatar, Text, ListItem, Icon, Image, Divider } from 'react-native-elements';
+import { Text, ListItem, Icon, Image } from 'react-native-elements';
 import ImagePicker from 'react-native-image-picker';
 import SettingScreenAction from './SettingScreenAction';
 
@@ -46,8 +46,6 @@ class SettingScreen extends Component<any> {
 
   editProfileImage() {
     ImagePicker.showImagePicker(options, (response) => {
-      console.log('Response = ', response);
-
       if (response.didCancel) {
         console.log('User cancelled image picker');
       }

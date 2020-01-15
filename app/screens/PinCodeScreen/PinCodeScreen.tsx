@@ -1,35 +1,37 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { View, Image, AppState } from 'react-native';
-import PinView from 'react-native-pin-view';
+import { View, Image } from 'react-native';
 import { Text, Icon } from 'native-base';
 import FingerprintScanner from 'react-native-fingerprint-scanner';
-import FingerPrintAndroid from '../FingerPrintScreen/FingerPrintScreenAndroid';
-import styles from '../FingerPrintScreen/styles'
+import FingerPrintAndroid from '../../components/FingerPrintComponent/FingerPrintAndroid';
+import styles from '../../components/FingerPrintComponent/styles'
 import PinCodeScreenAction from '../PinCodeScreen/PinCodeScreenAction'
 import AsyncStorage from '@react-native-community/async-storage';
+import PinCodeView from '../../components/PinCodeView/PinCodeView'
 
 const mapStateToProps = (reduxState: any) => ({
     ...reduxState,
     PinCodeScreenState: reduxState.PinCodeScreenState
 })
 
-class PinCodeScreen extends Component<any, any> {
+class PinCodeScreen extends Component<any> {
     constructor(props: any) {
         super(props);
-        this.onComplete = this.onComplete.bind(this);
+        this.onPinCodeComplete = this.onPinCodeComplete.bind(this)
         this.handleFingerprintShowed = this.handleFingerprintShowed.bind(this)
+        this.handleFingerprintDismissed = this.handleFingerprintDismissed.bind(this)
+        this.detectFingerprintAvailable = this.detectFingerprintAvailable.bind(this)
     }
 
-    handleFingerprintShowed = () => {
+    handleFingerprintShowed() {
         this.props.toggleFingerPrintPopup(true)
         FingerprintScanner
             .isSensorAvailable()
-            .then(biometryType => console.log(biometryType))
+            .then((biometryType: any) => console.log(biometryType))
             .catch(error => console.log(error));
     };
 
-    handleFingerprintDismissed = () => {
+    handleFingerprintDismissed() {
         this.props.toggleFingerPrintPopup(false)
     };
 
@@ -40,32 +42,31 @@ class PinCodeScreen extends Component<any, any> {
             .catch(error => console.log(error));
     }
 
-    componentWillUnmount() {
-        FingerprintScanner.release();
-    }
-
-    detectFingerprintAvailable = () => {
+    detectFingerprintAvailable() {
         FingerprintScanner
             .isSensorAvailable()
-            .catch(error => this.setState({ fingerPrintErrorMessage: error.message, fingerPrintBiometric: error.biometric }));
+            .catch(error => {
+                const errorObj: any = { fingerPrintErrorMessage: error.message, biometric: error.biometric }
+                this.props.setFingerPrintError(errorObj)
+            });
     }
 
-    onComplete = async (inputtedPin: any, clear: any) => {
-        const pinCode = await AsyncStorage.getItem('pinCode');
-        if (pinCode) {
-            if (inputtedPin === pinCode) {
-                this.props.navigation.navigate('App');
+    onPinCodeComplete = async (inputtedPin: any, clear: any) => {
+        const pinCodeSet = await AsyncStorage.getItem('pinCode')
+        if (pinCodeSet) {
+            if (inputtedPin === pinCodeSet) {
+                this.props.navigation.navigate('App')
             } else {
-                this.props.updateErrMessage('PIN is Wrong !');
+                this.props.setPinCodeError('Your pin is not match !')
                 clear()
             }
         } else {
-            if (this.props.PinCodeScreenState.mode === "enter") {
+            if (!this.props.PinCodeScreenState.pinCode) {
                 this.props.setPinCode(inputtedPin)
                 clear()
-            } else if (this.props.PinCodeScreenState.mode === "confirm") {
+            } else if (!this.props.PinCodeScreenState.pinCodeConfirmation) {
                 if (inputtedPin !== this.props.PinCodeScreenState.pinCode) {
-                    this.props.updateErrMessage('Comfirmation PIN is Wrong !');
+                    this.props.setPinCodeError('Comfirmation pin is not match !');
                     clear()
                 } else {
                     this.props.confirmPinCode(inputtedPin)
@@ -75,13 +76,8 @@ class PinCodeScreen extends Component<any, any> {
         }
     }
 
-    onPress(inputtedPin: any, clear: any, pressed: any) {
-        console.log("Pressed: " + pressed);
-        console.log("inputtedPin: " + inputtedPin);
-    }
-
     render() {
-        const { fingerPrintPopupShowed } = this.props.PinCodeScreenState;
+        console.log(this.props.PinCodeScreenState.pinCodeHeaderMessage)
         return (
             <>
                 <View style={{
@@ -95,19 +91,9 @@ class PinCodeScreen extends Component<any, any> {
                         source={{ uri: 'https://lh3.googleusercontent.com/-xv-5w6TW3t4/Xg7bp5oRL-I/AAAAAAAAAJk/e2HtX2F4FBcR9OrGV0x0uHxzS5cF3lFvwCK8BGAsYHg/s0/1-02.png' }}
                     />
                     {
-                        !this.props.PinCodeScreenState.pinCodeErrMessage && this.props.PinCodeScreenState.mode === 'enter' ?
-                            <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Please Enter Your PIN</Text>
-                            : null
-                    }
-                    {
-                        !this.props.PinCodeScreenState.pinCodeErrMessage && this.props.PinCodeScreenState.mode === 'confirm' ?
-                            <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Please Comfirm PIN</Text>
-                            : null
-                    }
-                    {
-                        this.props.PinCodeScreenState.pinCodeErrMessage ?
-                            < Text style={{ textAlign: 'center', fontWeight: 'bold', color: "red" }}>{this.props.PinCodeScreenState.pinCodeErrMessage}</Text>
-                            : null
+                        this.props.PinCodeScreenState.pinCodeErrorMessage ?
+                            <Text style={{ textAlign: 'center', fontWeight: 'bold', color: "red" }}>{this.props.PinCodeScreenState.pinCodeErrorMessage}</Text>
+                            : <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>{this.props.PinCodeScreenState.pinCodeHeaderMessage}</Text>
                     }
                 </View>
                 <View style={{
@@ -115,25 +101,15 @@ class PinCodeScreen extends Component<any, any> {
                     backgroundColor: '#fff',
                     justifyContent: 'center'
                 }}>
-                    <PinView
-                        onPress={this.onPress}
-                        onComplete={this.onComplete}
-                        pinLength={6}
-                        buttonDeletePosition="right"
-                        deleteText={<Icon name="md-close" />}
-                        customButtonText={<Icon name="finger-print" />}
-                        inputActiveBgColor="#1C7CD5"
-                        keyboardContainerStyle={{ marginTop: 20 }}
-                        keyboardViewStyle={{ borderWidth: 2, borderColor: "#707070" }}
+                    <PinCodeView
+                        onComplete={this.onPinCodeComplete}
                         onCustomButtonPress={this.handleFingerprintShowed}
                     />
+
                 </View>
                 {
-                    fingerPrintPopupShowed && (
-                        <FingerPrintAndroid
-                            style={styles.popup}
-                            handlePopupDismissed={this.handleFingerprintDismissed}
-                        />
+                    this.props.PinCodeScreenState.fingerPrintPopupShowed && (
+                        <FingerPrintAndroid handlePopupDismissed={this.handleFingerprintDismissed} />
                     )
                 }
             </>

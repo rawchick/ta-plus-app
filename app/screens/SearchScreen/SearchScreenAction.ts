@@ -1,7 +1,6 @@
 import ProfileService, { IProfileService } from '../../services/ProfileService'
 import PlaceService, { IPlaceService } from '../../services/PlaceService'
 
-
 export class SearchScreenAction {
     private ProfileService: IProfileService;
     private PlaceService: IPlaceService;
@@ -50,6 +49,22 @@ export class SearchScreenAction {
         } catch (err) {
             console.log('ERROR: ', err)
             dispatch({ type: "clear", payload: { ...SearchScreenState } })
+        }
+    }
+
+    clearList = () => async (dispatch: any, getState: any) => {
+        //stackexchange User API url
+        let SearchScreenState = getState().SearchScreenState;
+        try {
+            const newSearchScreenState = {
+                ...SearchScreenState,
+                listData: []
+            }
+
+            dispatch({ type: "update", payload: newSearchScreenState })
+        } catch (err) {
+            console.log('ERROR: ', err)
+            dispatch({ type: "default", payload: {} })
         }
     }
 }

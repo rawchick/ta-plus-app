@@ -2,20 +2,16 @@
 import React from 'react';
 import NewTripScreen from '../screens/NewTripScreen/NewTripScreen';
 import LandingNewTripScreen from '../screens/LandingNewTripScreen/LandingNewTripScreen';
-import LoadingScreen from '../screens/LoadingScreen/LoadingScreen';
+import SplashScreen from '../screens/SplashScreen/SplashScreen';
 import LoginScreen from '../screens/LoginScreen/LoginScreen';
 import PinCodeScreen from '../screens/PinCodeScreen/PinCodeScreen';
 import HomeScreen from '../screens/HomeScreen/HomeScreen';
-import DetailScreen from '../screens/DetailScreen/DetailScreen';
+import DetailScreen from '../screens/TripDetailScreen/TripDetailScreen';
 import SettingScreen from '../screens/SettingScreen/SettingScreen';
 import SearchScreen from '../screens/SearchScreen/SearchScreen';
-import FingerPrintScreenAndroid from '../screens/FingerPrintScreen/FingerPrintScreenAndroid';
-import { TouchableHighlight } from 'react-native'
 import { createSwitchNavigator, createAppContainer } from "react-navigation";
 import { createBottomTabNavigator } from 'react-navigation-tabs'
-import {
-    createStackNavigator
-} from 'react-navigation-stack';
+import { createStackNavigator } from 'react-navigation-stack';
 import { Icon } from 'react-native-elements'
 
 import { Icon as NBIcon } from 'native-base'
@@ -23,15 +19,7 @@ import { Icon as NBIcon } from 'native-base'
 const NewTripFormStack = createStackNavigator(
     {
         NewTrip: {
-            screen: NewTripScreen,
-            navigationOptions: ({ navigation }): any => {
-                return {
-                    title: "New Trip",
-                    headerRight: (
-                        <Icon color="gray" underlayColor="grey" name="close" containerStyle={{ padding: 15 }} onPress={() => navigation.pop()} />
-                    ),
-                }
-            }
+            screen: NewTripScreen
         },
         Search: {
             screen: SearchScreen,
@@ -141,10 +129,9 @@ const SettingStack = createStackNavigator(
 )
 
 const AuthStack = createStackNavigator(
-    { 
+    {
         Signin: LoginScreen,
-        PinCode: PinCodeScreen,
-        FingerPrintAndroid: FingerPrintScreenAndroid
+        PinCode: PinCodeScreen
     },
     {
         headerMode: 'none',
@@ -212,7 +199,7 @@ const TabNavigator = createBottomTabNavigator(
 
 export default createAppContainer(createSwitchNavigator(
     {
-        Starter: LoadingScreen,
+        Starter: SplashScreen,
         App: TabNavigator,
         Auth: AuthStack
     },

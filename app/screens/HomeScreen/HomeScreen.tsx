@@ -4,9 +4,10 @@ import { connect } from 'react-redux';
 import { View, Platform, FlatList, Image, RefreshControl, StyleSheet } from 'react-native';
 import { Container, Button, Text, Content, Tab, Tabs, Spinner, Left, Icon } from 'native-base';
 import { ButtonGroup } from 'react-native-elements'
-import HomeScreenAction from './HomeScreenAction'
 import { ScrollView } from 'react-native-gesture-handler';
 import ActionSheet from 'react-native-action-sheet';
+
+import HomeScreenAction from './HomeScreenAction'
 
 const mapStateToProps = (reduxState: any) => ({
   ...reduxState,
@@ -174,7 +175,7 @@ class HomeScreen extends Component<any, any> {
               }
               renderItem={({ item }: any) => (
                 <View style={[styles.box, styles.shadow3]}>
-                  <Image source={{ uri: item.imagePath }} style={{ width: '100%', height: 200 }} />
+                  <Image source={{ uri: "https://lh3.googleusercontent.com/-6VxSMm1TDe4/Xha2nE0D2ZI/AAAAAAAAALk/t-qkOIGM4rUFqWOqs8XcgoA21xd0BSD9gCK8BGAsYHg/s0/2020-01-08.png" }} style={{ width: '100%', height: 200 }} />
                   <View style={{
                     alignItems: 'flex-start',
                     padding: 20
@@ -222,7 +223,7 @@ class HomeScreen extends Component<any, any> {
               ItemSeparatorComponent={this.renderSeparator}
               ListFooterComponent={this.renderFooter.bind(this)}
               onEndReachedThreshold={0.4}
-              onEndReached={this.handleLoadMore.bind(this)}
+              // onEndReached={this.handleLoadMore.bind(this)}
             />
         }
       </View>

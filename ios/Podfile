@@ -1,8 +1,8 @@
 platform :ios, '9.0'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
-target 'reactntstarter' do
-  # Pods for reactntstarter
+target 'TAPlusApp' do
+  # Pods for TAPlusApp
   pod 'FBLazyVector', :path => "../node_modules/react-native/Libraries/FBLazyVector"
   pod 'FBReactNativeSpec', :path => "../node_modules/react-native/Libraries/FBReactNativeSpec"
   pod 'RCTRequired', :path => "../node_modules/react-native/Libraries/RCTRequired"
@@ -40,7 +40,7 @@ target 'reactntstarter' do
 
   pod 'TouchID', :path => '../node_modules/react-native-touch-id'
 
-  target 'reactntstarterTests' do
+  target 'TAPlusAppTests' do
     inherit! :search_paths
     # Pods for testing
   end
@@ -48,10 +48,10 @@ target 'reactntstarter' do
   use_native_modules!
 end
 
-target 'reactntstarter-tvOS' do
-  # Pods for reactntstarter-tvOS
+target 'TAPlusApp-tvOS' do
+  # Pods for TAPlusApp-tvOS
 
-  target 'reactntstarter-tvOSTests' do
+  target 'TAPlusApp-tvOSTests' do
     inherit! :search_paths
     # Pods for testing
   end

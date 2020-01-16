@@ -42,7 +42,7 @@ class SearchScreen extends Component<any, any> {
   };
 
   componentDidMount() {
-    const searchType = this.props.navigation.state.params
+    const { searchType } = this.props.navigation.state.params
     if (searchType === 'Traveler' || searchType === 'ClearanceStaff') {
       this.props.fetchUser()
     } else if (searchType === 'FromLocation' || searchType === 'DestinationLocation') {
@@ -51,7 +51,7 @@ class SearchScreen extends Component<any, any> {
   }
 
   onRefresh() {
-    const searchType = this.props.navigation.state.params
+    const { searchType } = this.props.navigation.state.params
     if (searchType === 'Traveler' || searchType === 'ClearanceStaff') {
       this.props.fetchUser()
     } else if (searchType === 'FromLocation' || searchType === 'DestinationLocation') {
@@ -60,7 +60,7 @@ class SearchScreen extends Component<any, any> {
   }
 
   search(text: any) {
-    const searchType = this.props.navigation.state.params
+    const { searchType } = this.props.navigation.state.params
     if (searchType === 'Traveler' || searchType === 'ClearanceStaff') {
       this.props.fetchUser(text)
     } else if (searchType === 'FromLocation' || searchType === 'DestinationLocation') {
@@ -69,7 +69,14 @@ class SearchScreen extends Component<any, any> {
   }
 
   _getData(data: any) {
-    const searchType = this.props.navigation.state.params
+    const {
+      searchType,
+      setField = () => { }
+    }: {
+      searchType: string,
+      setField: (data: any) => void
+    } = this.props.navigation.state.params
+
     if (searchType === 'Traveler') {
       this.props.setTravellerData(data)
     } else if (searchType === 'FromLocation') {
@@ -79,13 +86,13 @@ class SearchScreen extends Component<any, any> {
     } else if (searchType === 'ClearanceStaff') {
       this.props.stackClearanceStaff(data)
     }
-
+    setField(data)
     this.props.clearList()
     this.props.navigation.navigate('NewTrip', { update: true })
   }
 
   render() {
-    const searchType = this.props.navigation.state.params
+    const { searchType } = this.props.navigation.state.params
     return (
       <View style={styles.container}>
         <Item rounded style={{ margin: 15, marginLeft: 15 }} >

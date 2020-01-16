@@ -1,4 +1,3 @@
-import IHomeScreenStateDTO from '../../dtos/HomeScreenStateDTO';
 import service, { IMyTripService } from '../../services/MyTripService'
 
 export class HomeScreenAction {

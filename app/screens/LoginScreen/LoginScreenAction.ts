@@ -5,9 +5,9 @@ export class LoginScreenAction {
     signIn = (tokens: any, userInfo: any) => async (dispatch: any, getState: any) => {
         const AuthState: iAuthState = getState().AuthState;
         try {
-            await AsyncStorage.setItem('userTokens', JSON.stringify(tokens));
-            await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
-
+            await AsyncStorage.setItem('userTokens', JSON.stringify(tokens))
+            await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo))
+            console.log(userInfo)
             const newAuthState: iAuthState = {
                 ...AuthState,
                 userTokens: tokens,

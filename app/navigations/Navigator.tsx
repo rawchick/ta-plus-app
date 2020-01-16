@@ -6,7 +6,7 @@ import SplashScreen from '../screens/SplashScreen/SplashScreen';
 import LoginScreen from '../screens/LoginScreen/LoginScreen';
 import PinCodeScreen from '../screens/PinCodeScreen/PinCodeScreen';
 import HomeScreen from '../screens/HomeScreen/HomeScreen';
-import DetailScreen from '../screens/TripDetailScreen/TripDetailScreen';
+import TripDetailScreen from '../screens/TripDetailScreen/TripDetailScreen';
 import SettingScreen from '../screens/SettingScreen/SettingScreen';
 import SearchScreen from '../screens/SearchScreen/SearchScreen';
 import { createSwitchNavigator, createAppContainer } from "react-navigation";
@@ -53,8 +53,8 @@ const HomeStack = createStackNavigator(
             screen: HomeScreen,
             params: { mode: 'normal' }
         },
-        Detail: {
-            screen: DetailScreen,
+        TripDetail: {
+            screen: TripDetailScreen,
         },
         NewTrip: {
             screen: NewTripFormStack,

@@ -79,7 +79,7 @@ class PinCodeScreen extends Component<any> {
     render() {
         console.log(this.props.PinCodeScreenState.pinCodeHeaderMessage)
         return (
-            <>
+            <View style={{ flex: 1 }}>
                 <View style={{
                     flex: 2,
                     backgroundColor: '#fff',
@@ -112,7 +112,7 @@ class PinCodeScreen extends Component<any> {
                         <FingerPrintAndroid handlePopupDismissed={this.handleFingerprintDismissed} />
                     )
                 }
-            </>
+            </View>
         );
     }
 }

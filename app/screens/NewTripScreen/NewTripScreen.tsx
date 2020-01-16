@@ -26,7 +26,7 @@ class NewTripScreen extends Component<any, any> {
             selected: undefined
         };
         this.setTravellingDate = this.setTravellingDate.bind(this)
-        this.setReturnDate = this.setReturnDate.bind(this);
+        this.setReturnDate = this.setReturnDate.bind(this)
         this.openDatePicker = this.openDatePicker.bind(this)
         this._goToSearchScreen = this._goToSearchScreen.bind(this)
         this.tripObjectiveOnchange = this.tripObjectiveOnchange.bind(this)
@@ -78,6 +78,8 @@ class NewTripScreen extends Component<any, any> {
     setTravellingDate(event: any, newDate: any) {
         if (newDate !== undefined) {
             this.props.setTravellingDate(event, newDate);
+        } else {
+
         }
     }
 
@@ -263,7 +265,9 @@ class NewTripScreen extends Component<any, any> {
                         height: 50,
                         backgroundColor: '#533AAF',
                         margin: 20, marginBottom: 30
-                    }} onPress={this.createNewTrip}><Text style={{ textAlign: 'center', color: "#FFFFFF" }}> CREATE </Text></Button>
+                    }} onPress={this.createNewTrip}>
+                        <Text style={{ textAlign: 'center', color: "#FFFFFF" }}> CREATE </Text>
+                    </Button>
 
                     {NewTripScreenState.isReturnDatePickerShow && <DateTimePicker value={NewTripScreenState.trReturnDate}
                         mode={NewTripScreenState.mode}

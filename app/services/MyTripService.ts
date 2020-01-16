@@ -1,5 +1,6 @@
 import axios from 'axios'
 import env from '../config/env';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export interface IMyTripService {
     searchTrip: (keyword: string, status: string, offset: number, limit: number) => Promise<any[]>;

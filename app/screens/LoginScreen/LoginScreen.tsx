@@ -32,6 +32,7 @@ class LoginScreen extends Component<any> {
         try {
             const tokens: any = await azureAuth.webAuth.authorize({ scope: 'openid profile User.Read' })
             const info: any = await azureAuth.auth.msGraphRequest({ token: tokens.accessToken, path: 'me' })
+            console.log(info)
             this.props.signIn(tokens, info)
             this.props.navigation.navigate('Starter');
         } catch (error) {

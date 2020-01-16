@@ -1,11 +1,11 @@
 //import styles from './styles';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { View, Platform, FlatList, Image, RefreshControl, StyleSheet } from 'react-native';
-import { Container, Button, Text, Content, Tab, Tabs, Spinner, Left, Icon } from 'native-base';
+import { View, Platform, FlatList, Image, RefreshControl, StyleSheet, ScrollView, TouchableOpacity, ImageBackground } from 'react-native';
+import { Container, Button, Text, Content, Tab, Tabs, Spinner, Left, Icon, Badge } from 'native-base';
 import { ButtonGroup } from 'react-native-elements'
-import { ScrollView } from 'react-native-gesture-handler';
 import ActionSheet from 'react-native-action-sheet';
+import moment from 'moment'
 
 import HomeScreenAction from './HomeScreenAction'
 
@@ -19,7 +19,7 @@ const ASMenu = [
   'View by Status'
 ]
 
-class HomeScreen extends Component<any, any> {
+class HomeScreen extends Component<any> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -34,20 +34,21 @@ class HomeScreen extends Component<any, any> {
     return {
       title: "MY TRIP",
       headerRight: () => (
-        <Icon
-          name="options"
-          fontSize={20}
-          style={{ color: 'black', marginRight: 15 }}
-          onPress={() => {
-            ActionSheet.showActionSheetWithOptions({
-              options: ASMenu,
-              tintColor: 'blue'
-            },
-              (buttonIndex) => {
-                console.log('button clicked :', buttonIndex);
-              });
-          }}
-        />
+        <TouchableOpacity onPress={() => {
+          ActionSheet.showActionSheetWithOptions({
+            options: ASMenu,
+            tintColor: 'blue'
+          },
+            (buttonIndex) => {
+              console.log('button clicked :', buttonIndex);
+            });
+        }}>
+          <Icon
+            name="options"
+            fontSize={20}
+            style={{ color: 'black', marginRight: 15 }}
+          />
+        </TouchableOpacity>
       ),
       headerLeft: () => (<View></View>),
       headerTitleStyle: {
@@ -63,8 +64,8 @@ class HomeScreen extends Component<any, any> {
     this.setState({ selectedIndex })
   }
 
-  _navigateToDetail = (param: any) => () => {
-    this.props.navigation.navigate("Detail", { param })
+  _navigateToDetail = (param: any) => {
+    this.props.navigation.navigate("TripDetail", { data: param })
   }
 
   componentDidMount() {
@@ -111,6 +112,7 @@ class HomeScreen extends Component<any, any> {
     const { selectedIndex }: any = this.state
     const navParams = this.props.navigation.state.params
     const { mode } = navParams
+    const { HomeScreenState } = this.props
 
     let buttons = ['SCHEDULED', 'COMPLETED']
     if (mode === 'filter') {
@@ -151,7 +153,7 @@ class HomeScreen extends Component<any, any> {
             }} />
         </ScrollView>
         {
-          (this.props.HomeScreenState.loading && this.props.HomeScreenState.page === 1) ?
+          (HomeScreenState.loading && HomeScreenState.page === 1) ?
             <View style={{
               width: '100%',
               height: '100%',
@@ -163,67 +165,71 @@ class HomeScreen extends Component<any, any> {
             </View>
             :
             <FlatList
-              data={this.props.HomeScreenState.tripData}
-              extraData={this.props.HomeScreenState}
+              data={HomeScreenState.tripData}
+              extraData={HomeScreenState.tripData}
               refreshControl={
                 <RefreshControl
-                  refreshing={this.props.HomeScreenState.isRefreshing}
+                  refreshing={HomeScreenState.isRefreshing}
                   onRefresh={this.onRefresh.bind(this)}
                   tintColor="#fff"
                   titleColor="#533AAF"
                 />
               }
-              renderItem={({ item }: any) => (
-                <View style={[styles.box, styles.shadow3]}>
-                  <Image source={{ uri: "https://lh3.googleusercontent.com/-6VxSMm1TDe4/Xha2nE0D2ZI/AAAAAAAAALk/t-qkOIGM4rUFqWOqs8XcgoA21xd0BSD9gCK8BGAsYHg/s0/2020-01-08.png" }} style={{ width: '100%', height: 200 }} />
-                  <View style={{
-                    alignItems: 'flex-start',
-                    padding: 20
-                  }}>
-                    <View style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      margin: 5
-                    }}>
-                      <Text style={{
-                        fontSize: 18,
-                        textAlign: 'left',
-                        color: 'black',
-                      }}>{item.trObjective}</Text>
+              renderItem={({ item }: any) => {
+                const travellingDate = moment(item.taTravellingDate)
+                const returnDate = moment(item.taReturnDate)
+
+                return (
+                  <TouchableOpacity style={[styles.box, styles.shadow3]} onPress={() => this._navigateToDetail(item)}>
+                    <ImageBackground
+                      source={{ uri: "https://lh3.googleusercontent.com/-6VxSMm1TDe4/Xha2nE0D2ZI/AAAAAAAAALk/t-qkOIGM4rUFqWOqs8XcgoA21xd0BSD9gCK8BGAsYHg/s0/2020-01-08.png" }}
+                      style={{
+                        height: 180,
+                        width: '100%'
+                      }}
+                    >
+                      <View style={{ flexDirection: 'row', justifyContent: "space-between", padding: 15 }}>
+                        <Badge style={{ justifyContent: 'center', backgroundColor: '#AEB3B8', height: 40, padding: 20, paddingLeft: 40, paddingRight: 40 }}>
+                          <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>Draft</Text>
+                        </Badge>
+                      </View>
+                    </ImageBackground>
+                    <View style={{ flex: 1, padding: 15, paddingLeft: 20 }}>
+                      <View style={{ flexDirection: 'row', marginTop: 5, marginBottom: 5 }}>
+                        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{item.taObjective}</Text>
+                      </View>
+                      <View style={{ flexDirection: 'row', marginTop: 5, marginBottom: 5 }}>
+                        <Image style={{
+                          height: 24,
+                          width: 24,
+                          marginRight: 5
+                        }} source={require('../../assets/icons/pin/pin-24px.png')} />
+                        <Text style={{ fontSize: 16, color: '#AEB3B8' }}>
+                          {
+                            item.tripDestination[item.tripDestination.length - 1].destination.subTitle ?
+                              `${item.tripDestination[item.tripDestination.length - 1].destination.title}, ${item.tripDestination[item.tripDestination.length - 1].destination.subTitle}`
+                              : `${item.tripDestination[item.tripDestination.length - 1].destination.title}`
+                          }
+                        </Text>
+                      </View>
+                      <View style={{ flexDirection: 'row', marginTop: 5, marginBottom: 5 }}>
+                        <Image style={{
+                          height: 24,
+                          width: 24,
+                          marginRight: 5
+                        }} source={require('../../assets/icons/clock/clock-24px.png')} />
+                        <Text style={{ fontSize: 16, color: '#AEB3B8' }}>{`${returnDate.from(travellingDate, true)} (${travellingDate.format('DD MMM YYYY')} - ${returnDate.format('DD MMM YYYY')})`}</Text>
+                      </View>
                     </View>
-                    <View style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      margin: 5
-                    }}>
-                      <Icon name="pin" fontSize={20} style={{ color: 'black', marginRight: 15 }} />
-                      <Text style={{
-                        fontSize: 16,
-                        color: "#707070"
-                      }}>{item.location}, {item.country}</Text>
-                    </View>
-                    <View style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      margin: 5
-                    }}>
-                      <Icon name="ios-clock" fontSize={20} style={{ color: 'black', marginRight: 15 }} />
-                      <Text style={{
-                        fontSize: 16,
-                        color: "#707070"
-                      }}>{item.period}</Text>
-                    </View>
-                  </View>
-                </View>
-              )}
+                  </TouchableOpacity>
+                )
+              }
+              }
               keyExtractor={(item, index) => index.toString()}
               ItemSeparatorComponent={this.renderSeparator}
               ListFooterComponent={this.renderFooter.bind(this)}
               onEndReachedThreshold={0.4}
-              // onEndReached={this.handleLoadMore.bind(this)}
+            // onEndReached={this.handleLoadMore.bind(this)}
             />
         }
       </View>

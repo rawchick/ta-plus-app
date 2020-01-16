@@ -149,8 +149,8 @@ class NewTripScreen extends Component<any, any> {
       trId: 0,
       tvtStaId: '',
       trTravelerId: '',
-      trTravellingDate: values.tripDestination.getTime(),
-      trReturnDate: values.returnDate.getTime(),
+      trTravellingDate: values.tripDestination.date.getTime(),
+      trReturnDate: values.returnDate.date.getTime(),
       trPreparerId: '',
       trObjective: values.tripObjective,
       trFromId: '',
@@ -172,8 +172,14 @@ class NewTripScreen extends Component<any, any> {
       travelType: '',
       trFrom: '',
       tripDestination: [],
-      travellingDate: new Date(),
-      returnDate: new Date(),
+      travellingDate: {
+        date: new Date(),
+        isSelected: false,
+      },
+      returnDate: {
+        date: new Date(),
+        isSelected: false
+      },
     }
 
     return (
@@ -300,7 +306,6 @@ class NewTripScreen extends Component<any, any> {
                         onValueChange={(value) => {
                           if (!value) return
                           setFieldValue('travelType', value)
-                          // this.onTravelTypeChange(value)
                         }}
                       >
                         <Picker.Item color='#AEB3B8' label="Travel Type" value='' />
@@ -474,14 +479,14 @@ class NewTripScreen extends Component<any, any> {
                       <Text
                         style={{ color: '#AEB3B8', fontSize: 18 }}
                       >
-                        {this.state.isSelectedTravellingDate ? Moment(values.travellingDate).format('DD/MM/YYYY') : 'Travelling date'}
+                        {values.travellingDate.isSelected ? Moment(values.travellingDate.date).format('DD/MM/YYYY') : 'Travelling date'}
                       </Text>
                       <Icon type="ionicon" name="ios-calendar" color="#AEB3B8" containerStyle={{ paddingRight: 15 }}></Icon>
                     </TouchableOpacity>
                     <ErrorMessage
                       errors={{
                         touched: touched.travellingDate,
-                        message: this.state.isSelectedTravellingDate ? errors.travellingDate : 'Please specify'
+                        message: errors.travellingDate
                       }}
                     />
                     <TouchableOpacity
@@ -501,14 +506,14 @@ class NewTripScreen extends Component<any, any> {
                       onPress={() => this.setState({ isReturnDatePickerShow: true })}
                     >
                       <Text style={{ color: '#AEB3B8', fontSize: 18 }}>
-                        {this.state.isSelectedReturnDate ? Moment(values.returnDate).format('DD/MM/YYYY') : 'Reture date'}
+                        {values.returnDate.isSelected ? Moment(values.returnDate.date).format('DD/MM/YYYY') : 'Reture date'}
                       </Text>
                       <Icon type="ionicon" name="ios-calendar" color="#AEB3B8" containerStyle={{ paddingRight: 15 }}></Icon>
                     </TouchableOpacity>
                     <ErrorMessage
                       errors={{
                         touched: touched.returnDate,
-                        message: this.state.isSelectedReturnDate ? errors.returnDate : 'Please specify'
+                        message: errors.returnDate
                       }}
                     />
                   </Form>
@@ -575,38 +580,49 @@ class NewTripScreen extends Component<any, any> {
                     this.setState({ isSubmited: true })
                   }}
                 >
-                  <Text style={{ textAlign: 'center', color: "#FFFFFF" }}> CREATE </Text></Button>
+                  <Text style={{ textAlign: 'center', color: "#FFFFFF" }}>CREATE</Text>
+                </Button>
                 {this.state.isTravellingDatePickerShow && (
                   <DateTimePicker
-                    value={values.travellingDate}
+                    minimumDate={new Date()}
+                    value={values.travellingDate.date}
                     mode='date'
                     is24Hour
                     display="default"
                     onChange={(e, date) => {
-                      if (!date) return
-                      this.setState({
-                        isTravellingDatePickerShow: false,
-                        isSelectedTravellingDate: true,
-                      }, () => {
-                        setFieldValue('travellingDate', date)
-                      })
+                      if (date) {
+                        this.setState({ isTravellingDatePickerShow: false }, () => {
+                          setFieldValue('travellingDate', {
+                            date,
+                            isSelected: true,
+                          })
+                        })
+                      } else {
+                        this.setState({ isTravellingDatePickerShow: false })
+                      }
+
                     }}
                   />
                 )}
                 {this.state.isReturnDatePickerShow && (
                   <DateTimePicker
-                    value={values.returnDate}
+                    minimumDate={new Date()}
+                    value={values.returnDate.date}
                     mode='date'
                     is24Hour
                     display="default"
                     onChange={(e, date) => {
-                      if (!date) return
-                      this.setState({
-                        isReturnDatePickerShow: false,
-                        isSelectedReturnDate: true,
-                      }, () => {
-                        setFieldValue('returnDate', date)
-                      })
+                      if (date) {
+                        this.setState({ isReturnDatePickerShow: false }, () => {
+                          setFieldValue('returnDate', {
+                            date,
+                            isSelected: true,
+                          })
+                        })
+                      } else {
+                        this.setState({ isReturnDatePickerShow: false })
+                      }
+
                     }}
                   />
                 )}

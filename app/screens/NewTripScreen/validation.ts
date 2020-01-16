@@ -2,10 +2,21 @@ import _ from 'lodash'
 import moment from 'moment'
 
 const MESSAGE = {
-  REQUIRED: 'Please specify'
+  REQUIRED: 'Please specify',
+  URGENT: 'Urgent Traveling',
+  VALID_DATE: 'valid date'
+}
+
+const getFormatDate = (date: any) => {
+  return [
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+  ]
 }
 
 const validation = (values: any) => {
+  console.log('validation', values)
   const errors: any = {}
   if (!_.trim(values.tripObjective)) {
     errors.tripObjective = MESSAGE.REQUIRED
@@ -23,17 +34,26 @@ const validation = (values: any) => {
     errors.travelType = MESSAGE.REQUIRED
   }
   const currentDate = new Date()
-  const currentTravellingDate = values.travellingDate
-  const currentRetureDate = values.returnDate
+  const currentTravellingDate = values.travellingDate.date
+  const currentReturnDate = values.returnDate.date
 
-  const diffDay = moment(currentTravellingDate).diff(currentDate, 'days')
-  if (diffDay < 7) {
-    errors.travellingDate = 'Urgent Traveling'
+  const diffDay = moment(getFormatDate(currentTravellingDate)).diff(getFormatDate(currentDate), 'days')
+  if (!values.travellingDate.isSelected) {
+    errors.travellingDate = MESSAGE.REQUIRED
+  } else {
+    if (diffDay < 7) {
+      errors.travellingDate = MESSAGE.URGENT
+    }
   }
-  const isMoreThanTravellingDate = moment(currentRetureDate).diff(currentTravellingDate, 'days') <= 0
-  if (isMoreThanTravellingDate) {
-    errors.returnDate = 'fail date'
+  const isMoreThanTravellingDate = moment(getFormatDate(currentReturnDate)).diff(getFormatDate(currentTravellingDate), 'days') <= 0
+  if (!values.returnDate.isSelected) {
+    errors.returnDate = MESSAGE.REQUIRED
+  } else {
+    if (isMoreThanTravellingDate && values.travellingDate.isSelected) {
+      errors.returnDate = MESSAGE.VALID_DATE
+    }
   }
+
   return errors
 }
 export default validation

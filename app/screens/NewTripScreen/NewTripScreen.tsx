@@ -4,7 +4,6 @@ import {
   View,
   Keyboard,
   TouchableHighlight,
-  TextInput,
   Platform,
   TouchableOpacity,
 } from 'react-native'
@@ -29,8 +28,26 @@ import ActionSheet from 'react-native-action-sheet'
 import validation from './validation'
 import DraggableFlatList from '../../components/NewTripScreen/DragableFlatList/DragableFlatList'
 import styles from './styles'
+import { TextInput, FieldSelector } from '../../components/Common'
 
 const ASMenu = ['Remove']
+
+const defaultInitialValues = {
+  travelerName: '',
+  tripObjective: '',
+  travelType: '',
+  trFrom: '',
+  tripDestination: [],
+  travellingDate: {
+    date: new Date(),
+    isSelected: false,
+  },
+  returnDate: {
+    date: new Date(),
+    isSelected: false
+  },
+  clearanceStaff: []
+}
 
 const ErrorMessage = ({ errors }: any) => {
   const { touched, message } = errors
@@ -97,26 +114,25 @@ class NewTripScreen extends Component<any, any> {
   }
 
   _goToSearchScreen = async (
-    topic: "Traveler" | "FromLocation" | "DestinationLocation" | "ClearanceStaff",
+    topic: 'Traveler' | 'FromLocation' | 'DestinationLocation' | 'ClearanceStaff',
     setField: (arg: string) => void,
   ) => {
     Keyboard.dismiss()
-    this.props.navigation.navigate("Search", {
+    this.props.navigation.navigate('Search', {
       searchType: topic,
       setField,
     })
   }
 
-  removeDestinationItem = (locationId: any) => {
+  removeDestinationItem = (locationId: any, setFieldValue: () => void) => {
     ActionSheet.showActionSheetWithOptions({
       options: ASMenu,
       tintColor: 'blue'
-    },
-      (buttonIndex) => {
-        if (buttonIndex === 0) {
-          this.props.removeDestinationItem(parseInt(locationId))
-        }
-      });
+    }, () => {
+      if (setFieldValue) {
+        setFieldValue()
+      }
+    });
   }
 
   openDatePicker = (mode: string, field: string) => {
@@ -127,16 +143,15 @@ class NewTripScreen extends Component<any, any> {
     this.props.setTravelType(value);
   }
 
-  onClearanceStaffItemPress(id: any) {
+  onClearanceStaffItemPress(id: any, setFieldValue: () => void) {
     ActionSheet.showActionSheetWithOptions({
       options: ASMenu,
       tintColor: 'blue'
-    },
-      (buttonIndex) => {
-        if (buttonIndex === 0) {
-          this.props.removeClearanceStaffItem(id)
-        }
-      });
+    }, () => {
+      if (setFieldValue) {
+        setFieldValue()
+      }
+    })
   }
 
   createNewTrip = () => {
@@ -165,125 +180,65 @@ class NewTripScreen extends Component<any, any> {
 
   render() {
     const { NewTripScreenState } = this.props
-    console.log('props', this.props)
-    const initialValues = {
-      travelerName: '',
-      tripObjective: '',
-      travelType: '',
-      trFrom: '',
-      tripDestination: [],
-      travellingDate: {
-        date: new Date(),
-        isSelected: false,
-      },
-      returnDate: {
-        date: new Date(),
-        isSelected: false
-      },
-    }
+    const initialValues = this.props.initialValuesForm || defaultInitialValues
 
     return (
       <Formik
-        // enableReinitialize
         initialValues={initialValues}
         validateOnBlur={this.state.isSubmited}
         validateOnChange={this.state.isSubmited}
-        // validationSchema={validation}
         validate={validation}
         onSubmit={this.onSubmitForm}
       >
-        {({
-          handleChange,
-          values,
-          setFieldValue,
-          handleSubmit,
-          errors,
-          handleBlur,
-          setFieldTouched,
-          touched,
-          ...formikProps
-        }: any) => {
-          console.log('formikProps', formikProps)
-          console.log('errors', errors)
-          console.log('values', values)
+        {(formikProps) => {
+          const {
+            values,
+            setFieldValue,
+            handleSubmit,
+            errors,
+            setFieldTouched,
+            touched,
+          } = formikProps
+
           return (
-            <Container style={{ flex: 1, justifyContent: 'flex-start', borderTopWidth: 2, borderTopColor: "#1C7CD5" }}>
+            <Container style={styles.container}>
               <Content>
-                <View style={{ margin: 20, marginBottom: 10 }}>
+                <View style={styles.formWrapper}>
                   <Form>
-                    <TouchableOpacity
-                      activeOpacity={1}
-                      style={{
-                        marginVertical: 8,
-                        height: 50,
-                        borderRadius: 50,
-                        borderTopWidth: 2,
-                        borderLeftWidth: 2,
-                        borderRightWidth: 2,
-                        borderBottomWidth: 2,
-                        borderColor: touched.travelerName && errors.travelerName ? '#D9534F' : '#AEB3B8',
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        paddingLeft: 26,
-                      }}
-                      onPressOut={() => setFieldTouched('travelerName')}
-                      onPress={(e) => {
+                    <FieldSelector
+                      style={styles.verticalField}
+                      icon='search'
+                      placeholderTextColor='#AEB3B8'
+                      placeholder='Traveler'
+                      onPress={() => {
                         this._goToSearchScreen('Traveler', (data: any) => {
-                          const value = data.firstName + data.sureName
-                          setFieldValue('travelerName', value)
+                          const fullName = data.firstName + ' ' + data.sureName
+                          setFieldValue('travelerName', fullName)
                         })
                       }}
-                    >
-                      <Text
-                        style={{
-                          fontSize: 18,
-                          color: '#AEB3B8'
-                        }}
-                      >
-                        {values.travelerName || 'Traveler'}
-                      </Text>
-                      <Icon name="search" color="#AEB3B8" containerStyle={{ paddingRight: 15 }}></Icon>
-                    </TouchableOpacity>
-                    <ErrorMessage
-                      errors={{
+                      onBlur={() => setFieldTouched('travelerName')}
+                      value={values.travelerName}
+                      error={{
                         touched: touched.travelerName,
                         message: errors.travelerName
                       }}
                     />
-                    <View
-                      style={{
-                        paddingVertical: 8,
+                    <TextInput
+                      style={styles.verticalField}
+                      value={values.tripObjective}
+                      placeholderTextColor='#AEB3B8'
+                      placeholder='Trip Objective'
+                      onBlur={() => setFieldTouched('tripObjective')}
+                      onChangeText={(text) => {
+                        setFieldValue('tripObjective', text)
+                        this.tripObjectiveOnchange(text)
                       }}
-                    >
-                      <Input
-                        style={{
-                          paddingLeft: 25,
-                          paddingRight: 25,
-                          borderRadius: 50,
-                          borderWidth: 2,
-                          borderColor: touched.tripObjective && errors.tripObjective ? '#D9534F' : '#AEB3B8',
-                        }}
-                        placeholderTextColor='#AEB3B8'
-                        placeholder='Trip Objective'
-                        label={values.tripObjective}
-                        onBlur={() => setFieldTouched('tripObjective')}
-                        onChangeText={(text) => {
-                          setFieldValue('tripObjective', text)
-                          this.tripObjectiveOnchange(text)
-                        }}
-                      />
-                    </View>
-                    <ErrorMessage
-                      errors={{
+                      error={{
                         touched: touched.tripObjective,
                         message: errors.tripObjective
                       }}
                     />
-
                     <View
-                      // activeOpacity={1}
                       style={{
                         marginVertical: 8,
                         height: 50,
@@ -319,78 +274,44 @@ class NewTripScreen extends Component<any, any> {
                         message: errors.travelType
                       }}
                     />
-                    <View style={{ marginVertical: 8, height: 50 }} >
-                      <TouchableOpacity
-                        onPressOut={() => { setFieldTouched('trFrom') }}
-                        style={{
-                          height: 50,
-                          borderRadius: 50,
-                          borderWidth: 1,
-                          borderColor: (touched.trFrom && errors.trFrom) ? '#D9534F' : '#AEB3B8',
-                          display: 'flex',
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          paddingLeft: 26,
-                        }}
-                        onPress={() => {
-                          this._goToSearchScreen('FromLocation', (data: any) => {
-                            setFieldValue('trFrom', data.title)
-                          })
-                        }}
-                      >
-                        <Text style={{ fontSize: 18, color: '#AEB3B8' }}>{values.trFrom || 'From'}</Text>
-                        <Icon name="search" color="#AEB3B8" containerStyle={{ paddingRight: 15 }}></Icon>
-                      </TouchableOpacity>
-                      <ErrorMessage
-                        errors={{
-                          touched: touched.trFrom,
-                          message: errors.trFrom
-                        }}
-                      />
-                    </View>
-                    <View style={{ marginVertical: 8 }}>
+                    <FieldSelector
+                      style={styles.verticalField}
+                      icon='search'
+                      placeholderTextColor='#AEB3B8'
+                      placeholder='From'
+                      onPress={() => {
+                        this._goToSearchScreen('FromLocation', (data: any) => {
+                          setFieldValue('trFrom', data.title)
+                        })
+                      }}
+                      onBlur={() => setFieldTouched('trFrom')}
+                      value={values.trFrom}
+                      error={{
+                        touched: touched.trFrom,
+                        message: errors.trFrom
+                      }}
+                    />
+                    <View style={styles.verticalField}>
                       {
                         values.tripDestination.length ?
-                          <Item
-                            rounded
-                            style={{
-                              marginVertical: 8,
-                              flexDirection: 'row',
-                              flexWrap: 'wrap',
-                              borderColor: '#5CB85C',
-                              borderTopWidth: 2,
-                              borderLeftWidth: 2,
-                              borderRightWidth: 2,
-                              borderBottomWidth: 2
-                            }}>
+                          <Item rounded style={styles.tripDestinationList}>
                             <View style={{ flex: 1 }}>
                               {
-                                values.tripDestination.map((item: any) =>
-                                  <View
-                                    style={{
-                                      padding: 10,
-                                      flexDirection: 'row',
-                                      justifyContent: "space-between",
-                                      borderBottomWidth: 1,
-                                      borderColor: "#AEB3B8"
-                                    }}
-                                    key={item.locationId}
-                                  >
+                                values.tripDestination.map((item: any, tripDestinationIndex: number) =>
+                                  <View key={item.locationId} style={styles.tripDestinationItem}>
                                     <Icon
                                       name="remove-circle"
-                                      iconStyle={{ color: "#D9534F", paddingLeft: 10 }}
-                                      onPress={() => this.removeDestinationItem(item.locationId)}
-                                    />
-                                    <Text
-                                      style={{
-                                        color: 'black',
-                                        fontSize: 18,
-                                        marginLeft: 10,
-                                        flex: 1,
-                                        textAlign: "left"
+                                      iconStyle={styles.removeTripDestinationIcon}
+                                      onPress={() => {
+                                        this.removeDestinationItem(item.locationId, () => {
+                                          setFieldValue(
+                                            'tripDestination',
+                                            values.tripDestination.filter((_: any, i: number) => i !== tripDestinationIndex)
+                                          )
+                                        })
                                       }}
-                                    >
+                                    />
+                                    <Text style={styles.tripDestinationText}>
                                       {item.title}
                                     </Text>
                                     <Icon
@@ -424,94 +345,57 @@ class NewTripScreen extends Component<any, any> {
                             </View>
                           </Item>
                           : (
-                            <View style={{ marginVertical: 8, height: 50, }} >
-                              <TouchableOpacity
-                                style={{
-                                  height: 50,
-                                  borderRadius: 50,
-                                  borderTopWidth: 2,
-                                  borderLeftWidth: 2,
-                                  borderRightWidth: 2,
-                                  borderBottomWidth: 2,
-                                  borderColor: (touched.tripDestination && errors.tripDestination) ? '#D9534F' : '#AEB3B8',
-                                  flexDirection: 'row',
-                                  justifyContent: 'space-between',
-                                  alignItems: 'center',
-                                  paddingLeft: 26,
-                                }}
-                                onPressIn={() => setFieldTouched('tripDestination')}
-                                onPress={() => {
-                                  this._goToSearchScreen('DestinationLocation', (data: any) => {
-                                    setFieldValue('tripDestination', values.tripDestination.concat(data))
-                                  })
-                                }}
-                              >
-                                <Text style={{ fontSize: 18, color: '#AEB3B8' }}>Destination</Text>
-                                <Icon name="add" color="#AEB3B8" containerStyle={{ paddingRight: 15, marginLeft: 10 }} />
-                              </TouchableOpacity>
-                              <ErrorMessage
-                                errors={{
-                                  touched: touched.tripDestination,
-                                  message: errors.tripDestination
-                                }}
-                              />
-                            </View>
+                            <FieldSelector
+                              icon='add'
+                              placeholderTextColor='#AEB3B8'
+                              placeholder='Destination'
+                              onPress={() => {
+                                this._goToSearchScreen('DestinationLocation', (data: any) => {
+                                  setFieldValue('tripDestination', values.tripDestination.concat(data))
+                                })
+                              }}
+                              onBlur={() => setFieldTouched('tripDestination')}
+                              value={values.tripDestination}
+                              error={{
+                                touched: touched.tripDestination,
+                                message: errors.tripDestination
+                              }}
+                            />
                           )
                       }
                     </View>
-
-                    <TouchableOpacity
-                      style={{
-                        marginVertical: 8,
-                        height: 50,
-                        borderRadius: 50,
-                        paddingLeft: 20,
-                        paddingRight: 5,
-                        borderColor: '#AEB3B8',
-                        borderTopWidth: 2, borderLeftWidth: 2, borderRightWidth: 2, borderBottomWidth: 2,
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between'
-                      }}
-                      onPressOut={() => setFieldTouched('travellingDate')}
+                    <FieldSelector
+                      style={styles.verticalField}
+                      customIcon={(
+                        <Icon type="ionicon" name="ios-calendar" color="#AEB3B8" containerStyle={{ paddingRight: 15 }} size={30} />
+                      )}
+                      placeholderTextColor='#AEB3B8'
+                      placeholder='Travelling date'
                       onPress={() => this.setState({ isTravellingDatePickerShow: true })}
-                    >
-                      <Text
-                        style={{ color: '#AEB3B8', fontSize: 18 }}
-                      >
-                        {values.travellingDate.isSelected ? Moment(values.travellingDate.date).format('DD/MM/YYYY') : 'Travelling date'}
-                      </Text>
-                      <Icon type="ionicon" name="ios-calendar" color="#AEB3B8" containerStyle={{ paddingRight: 15 }}></Icon>
-                    </TouchableOpacity>
-                    <ErrorMessage
-                      errors={{
+                      onBlur={() => setFieldTouched('travellingDate')}
+                      value={values.travellingDate.isSelected
+                        ? Moment(values.travellingDate.date).format('DD/MM/YYYY')
+                        : ''
+                      }
+                      error={{
                         touched: touched.travellingDate,
                         message: errors.travellingDate
                       }}
                     />
-                    <TouchableOpacity
-                      style={{
-                        marginVertical: 8,
-                        height: 50,
-                        borderRadius: 50,
-                        paddingLeft: 20,
-                        paddingRight: 5,
-                        borderColor: '#AEB3B8',
-                        borderTopWidth: 2, borderLeftWidth: 2, borderRightWidth: 2, borderBottomWidth: 2,
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between'
-                      }}
-                      onPressOut={() => setFieldTouched('returnDate')}
+                    <FieldSelector
+                      style={styles.verticalField}
+                      customIcon={(
+                        <Icon type="ionicon" name="ios-calendar" color="#AEB3B8" containerStyle={{ paddingRight: 15 }} size={30} />
+                      )}
+                      placeholderTextColor='#AEB3B8'
+                      placeholder='Reture date'
                       onPress={() => this.setState({ isReturnDatePickerShow: true })}
-                    >
-                      <Text style={{ color: '#AEB3B8', fontSize: 18 }}>
-                        {values.returnDate.isSelected ? Moment(values.returnDate.date).format('DD/MM/YYYY') : 'Reture date'}
-                      </Text>
-                      <Icon type="ionicon" name="ios-calendar" color="#AEB3B8" containerStyle={{ paddingRight: 15 }}></Icon>
-                    </TouchableOpacity>
-                    <ErrorMessage
-                      errors={{
+                      onBlur={() => setFieldTouched('returnDate')}
+                      value={values.returnDate.isSelected
+                        ? Moment(values.returnDate.date).format('DD/MM/YYYY')
+                        : ''
+                      }
+                      error={{
                         touched: touched.returnDate,
                         message: errors.returnDate
                       }}
@@ -523,65 +407,53 @@ class NewTripScreen extends Component<any, any> {
                     Clearance Staff
                   </Text>
                 </View>
-                <View style={{ margin: 20, flexDirection: 'row', flexWrap: 'wrap' }}>
-                  {NewTripScreenState.tripClearanceStaffDisplay
-                    ? NewTripScreenState.tripClearanceStaffDisplay.map((item: any) => (
+                <View style={styles.staffListContainer}>
+                  {!!values.clearanceStaff.length
+                    ? values.clearanceStaff.map((item: any, staffIndex: number) => (
                       <TouchableHighlight
-                        underlayColor='#707070'
-                        style={{
-                          width: 70,
-                          height: 70,
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          backgroundColor: '#fff',
-                          borderWidth: 6,
-                          borderRadius: 50,
-                          borderColor: '#472F92',
-                          marginLeft: 15,
-                          marginTop: 15,
-                        }}
                         key={item.employeeId}
-                        onPress={() => this.onClearanceStaffItemPress(item.employeeId)}
+                        underlayColor='#707070'
+                        style={styles.staffImg}
+                        onPress={() => {
+                          this.onClearanceStaffItemPress(item.employeeId, () => {
+                            setFieldValue(
+                              'clearanceStaff',
+                              values.clearanceStaff.filter((_: any, index: number) => index !== staffIndex)
+                            )
+                          })
+                        }}
                       >
-                        <Text style={{ fontSize: 22, fontWeight: 'bold' }}>{item.shortName}</Text>
+                        <Text style={styles.staffText}>{item.shortName}</Text>
                       </TouchableHighlight>
-                    )) : null
+                    ))
+                    : null
                   }
                   <TouchableHighlight
-                    style={{
-                      width: 70,
-                      height: 70,
-                      justifyContent: "center",
-                      alignItems: "center",
-                      backgroundColor: "#fff",
-                      borderWidth: 6,
-                      borderRadius: 50,
-                      borderColor: "#AEB3B8",
-                      marginLeft: 15,
-                      marginTop: 15
+                    style={styles.addStaffBtn}
+                    onPress={() => {
+                      this._goToSearchScreen('ClearanceStaff', (staff) => {
+                        const staffs = values.clearanceStaff.concat(staff).map((_staff: any) => ({
+                          ..._staff,
+                          shortName: _staff.firstName.slice(0, 1) + '' + _staff.sureName.slice(0, 1)
+                        }))
+                        setFieldValue('clearanceStaff', staffs)
+                      })
                     }}
-                    onPress={() => this._goToSearchScreen('ClearanceStaff', () => { })}
                   >
                     <Icon name="add" size={50} iconStyle={{ color: "#AEB3B8" }} />
                   </TouchableHighlight>
                 </View>
                 <Button
                   rounded
-                  style={{
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    height: 50,
-                    backgroundColor: '#533AAF',
-                    margin: 20,
-                    marginBottom: 30,
-                  }}
+                  style={styles.submitBtn}
                   onPress={() => {
                     handleSubmit()
                     this.setState({ isSubmited: true })
                   }}
                 >
-                  <Text style={{ textAlign: 'center', color: "#FFFFFF" }}>CREATE</Text>
+                  <Text style={styles.submitText}>Create trip</Text>
                 </Button>
+
                 {this.state.isTravellingDatePickerShow && (
                   <DateTimePicker
                     minimumDate={new Date()}
@@ -600,7 +472,6 @@ class NewTripScreen extends Component<any, any> {
                       } else {
                         this.setState({ isTravellingDatePickerShow: false })
                       }
-
                     }}
                   />
                 )}
@@ -622,11 +493,9 @@ class NewTripScreen extends Component<any, any> {
                       } else {
                         this.setState({ isReturnDatePickerShow: false })
                       }
-
                     }}
                   />
                 )}
-
               </Content>
             </Container>
           )

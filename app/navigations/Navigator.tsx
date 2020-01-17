@@ -51,7 +51,7 @@ const HomeStack = createStackNavigator(
     {
         Home: {
             screen: HomeScreen,
-            params: { mode: 'normal' }
+            params: { mode: 'scheduled' }
         },
         TripDetail: {
             screen: TripDetailScreen,
@@ -184,11 +184,13 @@ const TabNavigator = createBottomTabNavigator(
         tabBarOptions: {
             showIcon: true,
             showLabel: true,
-            activeTintColor: '#533AAF',
+            activeTintColor: '#064ACB',
             inactiveTintColor: '#707070',
             style: {
                 width: '100%',
                 height: 70,
+                borderTopWidth: 2,
+                borderTopColor: "#AEB3B8"
             },
             tabStyle: {
                 padding: 10,

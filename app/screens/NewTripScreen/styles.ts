@@ -4,11 +4,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'flex-start',
-    borderTopWidth: 2,
-    borderTopColor: '#1C7CD5'
+    borderTopWidth: 1,
+    borderTopColor: '#064ACB'
   },
   verticalField: {
-    marginVertical: 8
+    marginVertical: 10
   },
   formWrapper: {
     margin: 20,

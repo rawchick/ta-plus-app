@@ -29,7 +29,10 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 16,
     color: 'red'
-  }
+  },
+  validBorder: {
+    borderColor: '#5CB85C'
+  },
 })
 
 type Props = {
@@ -51,6 +54,7 @@ class TextInput extends React.PureComponent<Props, any> {
   render() {
     const message = _.get(this.props, 'error.message', '')
     const isError = _.get(this.props, 'error.touched', false) && !!message
+    const isValid = _.get(this.props, 'error.touched', false) && this.props.value
 
     return (
       <View style={[styles.container, this.props.style]}>
@@ -58,7 +62,11 @@ class TextInput extends React.PureComponent<Props, any> {
           <Input
             style={[
               styles.textInput,
-              isError ? styles.borderError : styles.defaultBorder
+              isError
+                ? styles.borderError
+                : isValid
+                  ? styles.validBorder
+                  : styles.defaultBorder
             ]}
             placeholderTextColor={this.props.placeholderTextColor}
             placeholder={this.props.placeholder}

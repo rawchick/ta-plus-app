@@ -34,6 +34,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'red'
   },
+  validBorder: {
+    borderColor: '#5CB85C'
+  },
   icon: {
     position: 'absolute',
     right: 16,
@@ -50,16 +53,14 @@ type Props = {
   onBlur?: () => void
   style?: any
   icon: React.ReactNode
-  // error?: {
-  //   touched: boolean
-  //   message: string
-  // }
-  error: any
+  error?: {
+    touched: boolean
+    message: string
+  }
 }
 
 class FieldSelector extends React.PureComponent<any, any> {
   onPress = () => {
-    console.log('pressss')
     this.props.onPress()
     this.props.onBlur()
   }
@@ -77,7 +78,8 @@ class FieldSelector extends React.PureComponent<any, any> {
   render() {
     const message = _.get(this.props, 'error.message', '')
     const isError = _.get(this.props, 'error.touched', false) && !!message
-    console.log(this.props.value)
+    const isValid = _.get(this.props, 'error.touched', false) && this.props.value
+
     return (
       <View style={[styles.container, this.props.style]}>
         <Item rounded onPress={this.onPress} style={styles.inputWrapper}>
@@ -85,7 +87,11 @@ class FieldSelector extends React.PureComponent<any, any> {
             disabled
             style={[
               styles.textInput,
-              isError ? styles.borderError : styles.defaultBorder
+              isError
+                ? styles.borderError
+                : isValid
+                  ? styles.validBorder
+                  : styles.defaultBorder
             ]}
             placeholderTextColor={this.props.placeholderTextColor}
             placeholder={this.props.placeholder}

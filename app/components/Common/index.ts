@@ -1,9 +1,11 @@
 import {
   FieldSelector,
-  TextInput
+  TextInput,
+  FieldDropdown,
 } from './Field'
 
 export {
   FieldSelector,
   TextInput,
+  FieldDropdown,
 }

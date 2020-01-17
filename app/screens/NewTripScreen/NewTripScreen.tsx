@@ -28,7 +28,7 @@ import ActionSheet from 'react-native-action-sheet'
 import validation from './validation'
 import DraggableFlatList from '../../components/NewTripScreen/DragableFlatList/DragableFlatList'
 import styles from './styles'
-import { TextInput, FieldSelector } from '../../components/Common'
+import { TextInput, FieldSelector, FieldDropdown } from '../../components/Common'
 
 const ASMenu = ['Remove']
 
@@ -75,8 +75,6 @@ class NewTripScreen extends Component<any, any> {
       isSelectedTravellingDate: false,
       isSubmited: false,
     }
-    this.removeDestinationItem = this.removeDestinationItem.bind(this)
-    this.onClearanceStaffItemPress = this.onClearanceStaffItemPress.bind(this)
   }
 
   static navigationOptions = ({ navigation }: any) => {
@@ -95,18 +93,14 @@ class NewTripScreen extends Component<any, any> {
   }
 
   componentDidMount = () => {
-    this.props.navigation.setParams({ handleClearForm: this.clearState.bind(this) });
+    this.props.navigation.setParams({
+      handleClearForm: this.clearState
+    });
   }
 
-  clearState() {
+  clearState = () => {
     this.props.clearNewTripState()
     this.props.navigation.popToTop()
-  }
-
-  onValueChange(value: string) {
-    this.setState({
-      selected: value
-    });
   }
 
   tripObjectiveOnchange = (text: any) => {
@@ -143,7 +137,7 @@ class NewTripScreen extends Component<any, any> {
     this.props.setTravelType(value);
   }
 
-  onClearanceStaffItemPress(id: any, setFieldValue: () => void) {
+  onClearanceStaffItemPress = (id: any, setFieldValue: () => void) => {
     ActionSheet.showActionSheetWithOptions({
       options: ASMenu,
       tintColor: 'blue'
@@ -238,38 +232,20 @@ class NewTripScreen extends Component<any, any> {
                         message: errors.tripObjective
                       }}
                     />
-                    <View
-                      style={{
-                        marginVertical: 8,
-                        height: 50,
-                        borderRadius: 50,
-                        borderWidth: 1.5,
-                        borderColor: '#AEB3B8',
+                    <FieldDropdown
+                      onBlur={() => setFieldTouched('travelType')}
+                      defaultValue={values.travelType}
+                      placeholder="Travel Type"
+                      onValueChange={(value: any) => {
+                        if (!value) return
+                        setFieldValue('travelType', value)
                       }}
-                    >
-                      <Picker
-                        mode="dropdown"
-                        iosIcon={<Icon name="arrow-down" />}
-                        style={{
-                          marginLeft: 20,
-                          borderRadius: 50,
-                          borderWidth: 2,
-                          borderColor: '#AEB3B8',
-                        }}
-                        onTouchStart={() => setFieldTouched('travelType')}
-                        selectedValue={values.travelType}
-                        onValueChange={(value) => {
-                          if (!value) return
-                          setFieldValue('travelType', value)
-                        }}
-                      >
-                        <Picker.Item color='#AEB3B8' label="Travel Type" value='' />
-                        <Picker.Item label="International" value='200' />
-                        <Picker.Item label="Domestic" value='201' />
-                      </Picker>
-                    </View>
-                    <ErrorMessage
-                      errors={{
+                      options={[
+                        { label: 'Travel Type', value: '' },
+                        { label: 'International', value: '202' },
+                        { label: 'Domestic', value: '201' },
+                      ]}
+                      error={{
                         touched: touched.travelType,
                         message: errors.travelType
                       }}
@@ -314,13 +290,7 @@ class NewTripScreen extends Component<any, any> {
                                     <Text style={styles.tripDestinationText}>
                                       {item.title}
                                     </Text>
-                                    <Icon
-                                      name="menu"
-                                      iconStyle={{
-                                        color: "#AEB3B8",
-                                        paddingRight: 10
-                                      }}
-                                    />
+                                    <Icon name="menu" iconStyle={{ color: "#AEB3B8", paddingRight: 10 }} />
                                   </View>
                                 )
                               }
@@ -447,8 +417,7 @@ class NewTripScreen extends Component<any, any> {
                   rounded
                   style={styles.submitBtn}
                   onPress={() => {
-                    handleSubmit()
-                    this.setState({ isSubmited: true })
+                    this.setState({ isSubmited: true }, handleSubmit)
                   }}
                 >
                   <Text style={styles.submitText}>Create trip</Text>

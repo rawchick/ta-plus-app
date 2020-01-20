@@ -34,13 +34,19 @@ class TripDetailScreen extends Component<any, any> {
     super(props);
     this.state = {
       modalVisible: false,
+      tabIndex: 0
     };
 
     this.setModalVisible = this.setModalVisible.bind(this)
+    this.updateTabIndex = this.updateTabIndex.bind(this)
   }
 
   setModalVisible(visible: boolean) {
     this.setState({ modalVisible: visible });
+  }
+
+  updateTabIndex(index: number) {
+    this.setState({ tabIndex: index })
   }
 
   static navigationOptions = ({ navigation }: any) => {
@@ -89,7 +95,7 @@ class TripDetailScreen extends Component<any, any> {
         <View>
           <ScrollView horizontal={false}>
             <ButtonGroup
-              onPress={this.updateIndex}
+              onPress={this.updateTabIndex}
               selectedIndex={0}
               buttons={groupButton}
               containerStyle={{

@@ -26,7 +26,6 @@ import DateTimePicker from '@react-native-community/datetimepicker'
 import Moment from 'moment'
 import ActionSheet from 'react-native-action-sheet'
 import validation from './validation'
-import DraggableFlatList from '../../components/NewTripScreen/DragableFlatList/DragableFlatList'
 import styles from './styles'
 import { TextInput, FieldSelector, FieldDropdown } from '../../components/Common'
 

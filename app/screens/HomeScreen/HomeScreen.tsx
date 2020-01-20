@@ -19,34 +19,44 @@ const ASMenu = [
   'View by Status'
 ]
 
-class HomeScreen extends Component<any> {
+interface IState {
+  selectedIndex: number
+  selectedStatus: string | null
+  mode: 'scheduled' | 'status'
+}
+
+class HomeScreen extends Component<any, IState> {
   constructor(props: any) {
     super(props);
     this.state = {
-      selectedIndex: 0
+      selectedIndex: 0,
+      selectedStatus: null,
+      mode: 'scheduled'
     }
+
     this.updateIndex = this.updateIndex.bind(this)
     this._navigateToDetail = this._navigateToDetail.bind(this)
-    this.switchHeaderMenu = this.switchHeaderMenu.bind(this)
   }
 
   static navigationOptions = ({ navigation }: any) => {
     return {
       title: "MY TRIP",
       headerRight: () => (
-        <TouchableOpacity onPress={() => {
-          ActionSheet.showActionSheetWithOptions({
-            options: ASMenu,
-            tintColor: 'blue'
-          },
-            (buttonIndex) => {
-              console.log('button clicked :', buttonIndex);
-            });
-        }}>
-          <Icon
-            name="options"
-            fontSize={20}
-            style={{ color: 'black', marginRight: 15 }}
+        <TouchableOpacity
+          style={{ padding: 10, marginRight: 5 }}
+          onPress={() => {
+            ActionSheet.showActionSheetWithOptions({
+              options: ASMenu,
+              tintColor: 'blue'
+            },
+              (buttonIndex) => {
+                let mode = buttonIndex === 1 ? 'status' : 'scheduled'
+                navigation.setParams({ mode: mode })
+              });
+          }}>
+          <Image
+            style={{ alignItems: "flex-end" }}
+            source={require('../../assets/icons/option/option.png')}
           />
         </TouchableOpacity>
       ),
@@ -59,9 +69,9 @@ class HomeScreen extends Component<any> {
     };
   }
 
-  updateIndex(selectedIndex: number) {
-    this.props.fetchUser()
-    this.setState({ selectedIndex })
+  updateIndex(index: number) {
+    this.setState({ selectedIndex: index })
+    this.fetchTrip(index)
   }
 
   _navigateToDetail = (param: any) => {
@@ -69,18 +79,31 @@ class HomeScreen extends Component<any> {
   }
 
   componentDidMount() {
-    this.props.fetchUser() //Method for API call
+    this.props.fetchTripStatus()
+    this.fetchTrip(0) //Method for API call
   }
 
-  handleLoadMore = () => {
-    if (!this.props.HomeScreenState.loading) {
-      this.props.loadMoreUser(); // method for API call 
+  getStatusText(selectedIndex: any) {
+    const { mode } = this.props.navigation.state.params
+    if (mode === 'scheduled' && selectedIndex === 0) {
+      return 'status=300&status=301&status=302&status=303&status=304&status=305&status=306'
+    } else if ((mode === 'scheduled' && selectedIndex === 1)) {
+      return 'status=307'
+    } else {
+      return 'status=' + (selectedIndex + 300)
     }
-  };
-
-  switchHeaderMenu = () => {
-    console.log("SWITCH")
   }
+
+  fetchTrip = async (selectedIndex: any | null = null) => {
+    const statusText = await this.getStatusText(selectedIndex)
+    this.props.fetchTrip("", statusText)
+  }
+
+  handleLoadMore = async () => {
+    const { selectedIndex } = this.state
+    const statusText = await this.getStatusText(selectedIndex)
+    this.props.loadMoreTrip("", statusText)
+  };
 
   renderFooter = () => {
     //it will show indicator at the bottom of the list when data is loading otherwise it returns null
@@ -104,28 +127,59 @@ class HomeScreen extends Component<any> {
   };
 
   onRefresh() {
-    this.props.fetchUser();
+    const { selectedIndex } = this.state
+    this.fetchTrip(selectedIndex);
   }
 
+  getStatusBadgeColor(statusId: any) {
+    switch (statusId) {
+      case 300:
+        return "#AEB3B8"
+      case 301:
+        return "#E0BE00"
+      case 302:
+        return "#472F92"
+      case 303:
+        return "#064ACB"
+      case 304:
+        return "#FF7600"
+      case 305:
+        return "#CC0000"
+      case 306:
+        return "#00AEEF"
+      case 307:
+        return "#19C155"
+      case 308:
+        return "#AEB3B8"
+      default:
+        return "#AEB3B8"
+    }
+  }
+
+  getGroupButton(mode: string) {
+    let buttons = ['SCHEDULED', 'COMPLETED']
+    if (mode === 'status') {
+      buttons = this.props.HomeScreenState.tripStatus.map((item: any) => {
+        return item.staNameEn.toUpperCase()
+      })
+    }
+
+    return buttons
+  }
 
   render() {
     const { selectedIndex }: any = this.state
-    const navParams = this.props.navigation.state.params
-    const { mode } = navParams
     const { HomeScreenState } = this.props
-
-    let buttons = ['SCHEDULED', 'COMPLETED']
-    if (mode === 'filter') {
-      buttons = [
-        'DRAFT',
-        'WAITING',
-        'WAITING FOR APPROVE'
-      ]
+    const { mode } = this.props.navigation.state.params
+    const buttons = this.getGroupButton(mode)
+    if (mode !== this.state.mode) {
+      this.setState({ mode: mode })
+      this.updateIndex(0)
     }
 
     return (
-      <View style={{ width: '100%', height: '100%' }}>
-        <ScrollView horizontal={mode === 'filter' ? true : false}>
+      <View style={{ flex: 1, backgroundColor: '#fff' }}>
+        <ScrollView style={{ maxHeight: 54 }} horizontal={mode === 'status' ? true : false}>
           <ButtonGroup
             onPress={this.updateIndex}
             selectedIndex={selectedIndex}
@@ -136,12 +190,13 @@ class HomeScreen extends Component<any> {
               marginLeft: 0,
               marginTop: 0,
               borderRadius: 0,
+              borderColor: '#AEB3B8',
             }}
-            buttonStyle={{ backgroundColor: '#FFFFFF', borderColor: '#707070', padding: 20 }}
+            buttonStyle={{ backgroundColor: '#FFFFFF', borderColor: '#AEB3B8', padding: 20, borderBottomWidth: 1 }}
             selectedButtonStyle={{
               backgroundColor: '#FFFFFF',
-              borderBottomWidth: 3,
-              borderBottomColor: "#533AAF"
+              borderBottomWidth: 4,
+              borderBottomColor: "#064ACB"
             }}
             textStyle={{
               color: '#707070',
@@ -155,13 +210,11 @@ class HomeScreen extends Component<any> {
         {
           (HomeScreenState.loading && HomeScreenState.page === 1) ?
             <View style={{
-              width: '100%',
-              height: '100%',
               alignItems: 'center',
               justifyContent: 'flex-start',
-              paddingTop: 20
+              flex: 1
             }}>
-              <Spinner color='#533AAF' />
+              <Spinner color='#064ACB' />
             </View>
             :
             <FlatList
@@ -189,8 +242,8 @@ class HomeScreen extends Component<any> {
                       }}
                     >
                       <View style={{ flexDirection: 'row', justifyContent: "space-between", padding: 15 }}>
-                        <Badge style={{ justifyContent: 'center', backgroundColor: '#AEB3B8', height: 40, padding: 20, paddingLeft: 40, paddingRight: 40 }}>
-                          <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>Draft</Text>
+                        <Badge style={{ justifyContent: 'center', backgroundColor: this.getStatusBadgeColor(item.tsStaId), height: 35, padding: 20, paddingLeft: 10, paddingRight: 10 }}>
+                          <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>{HomeScreenState.tripStatus.find((statusObj: any) => statusObj.staId === item.tsStaId).staNameEn}</Text>
                         </Badge>
                       </View>
                     </ImageBackground>
@@ -229,7 +282,7 @@ class HomeScreen extends Component<any> {
               ItemSeparatorComponent={this.renderSeparator}
               ListFooterComponent={this.renderFooter.bind(this)}
               onEndReachedThreshold={0.4}
-            // onEndReached={this.handleLoadMore.bind(this)}
+              onEndReached={HomeScreenState.tripData.length === HomeScreenState.tripDataTotal ? null : this.handleLoadMore.bind(this)}
             />
         }
       </View>

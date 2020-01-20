@@ -6,6 +6,7 @@ import {
   TouchableHighlight,
   Platform,
   TouchableOpacity,
+  Image,
 } from 'react-native'
 import _ from 'lodash'
 import {
@@ -31,6 +32,19 @@ import styles from './styles'
 import { TextInput, FieldSelector, FieldDropdown } from '../../components/Common'
 
 const ASMenu = ['Remove']
+
+const IconImage: React.SFC<any> = ({ src, width, height }) => {
+  return (
+    <Image
+      style={{
+        height: height || 24,
+        width: width || 24,
+        marginRight: 5
+      }}
+      source={src}
+    />
+  )
+}
 
 const defaultInitialValues = {
   travelerName: '',
@@ -201,7 +215,13 @@ class NewTripScreen extends Component<any, any> {
                   <Form>
                     <FieldSelector
                       style={styles.verticalField}
-                      icon='search'
+                      customIcon={
+                        <IconImage
+                          width={27}
+                          height={27}
+                          src={require('../../assets/icons/search/search.png')}
+                        />
+                      }
                       placeholderTextColor='#AEB3B8'
                       placeholder='Traveler'
                       onPress={() => {
@@ -252,7 +272,13 @@ class NewTripScreen extends Component<any, any> {
                     />
                     <FieldSelector
                       style={styles.verticalField}
-                      icon='search'
+                      customIcon={
+                        <IconImage
+                          width={27}
+                          height={27}
+                          src={require('../../assets/icons/search/search.png')}
+                        />
+                      }
                       placeholderTextColor='#AEB3B8'
                       placeholder='From'
                       onPress={() => {
@@ -295,28 +321,33 @@ class NewTripScreen extends Component<any, any> {
                                 )
                               }
                               <TouchableOpacity
-                                style={{
-                                  height: 50,
-                                  flexDirection: 'row',
-                                  justifyContent: 'center',
-                                  alignItems: 'center'
-                                }}
+                                style={styles.addMoreDestinationBtn}
                                 onPress={() => {
                                   this._goToSearchScreen('DestinationLocation', (data: any) => {
                                     setFieldValue('tripDestination', values.tripDestination.concat(data))
                                   })
                                 }}
                               >
-                                <Icon name="add-circle-outline" color="#AEB3B8" containerStyle={{ paddingRight: 15, marginLeft: 10 }}></Icon>
-                                <Text style={{ color: '#AEB3B8', fontSize: 16 }}>
+                                <IconImage
+                                  width={25}
+                                  height={25}
+                                  src={require('../../assets/icons/add_circle/add-circle-outline.png')}
+                                />
+                                <Text style={styles.addMoreText}>
                                   Add more destination
-                              </Text>
+                                </Text>
                               </TouchableOpacity>
                             </View>
                           </Item>
                           : (
                             <FieldSelector
-                              icon='add'
+                              customIcon={
+                                <IconImage
+                                  width={25}
+                                  height={25}
+                                  src={require('../../assets/icons/add_circle/add-circle-outline.png')}
+                                />
+                              }
                               placeholderTextColor='#AEB3B8'
                               placeholder='Destination'
                               onPress={() => {
@@ -325,7 +356,7 @@ class NewTripScreen extends Component<any, any> {
                                 })
                               }}
                               onBlur={() => setFieldTouched('tripDestination')}
-                              value={values.tripDestination}
+                              value={values.tripDestination.length ? values.tripDestination.length : ''}
                               error={{
                                 touched: touched.tripDestination,
                                 message: errors.tripDestination
@@ -337,7 +368,7 @@ class NewTripScreen extends Component<any, any> {
                     <FieldSelector
                       style={styles.verticalField}
                       customIcon={(
-                        <Icon type="ionicon" name="ios-calendar" color="#AEB3B8" containerStyle={{ paddingRight: 15 }} size={30} />
+                        <IconImage src={require('../../assets/icons/calendar/_ionicons_svg_md-calendar.png')} />
                       )}
                       placeholderTextColor='#AEB3B8'
                       placeholder='Travelling date'
@@ -355,7 +386,7 @@ class NewTripScreen extends Component<any, any> {
                     <FieldSelector
                       style={styles.verticalField}
                       customIcon={(
-                        <Icon type="ionicon" name="ios-calendar" color="#AEB3B8" containerStyle={{ paddingRight: 15 }} size={30} />
+                        <IconImage src={require('../../assets/icons/calendar/_ionicons_svg_md-calendar.png')} />
                       )}
                       placeholderTextColor='#AEB3B8'
                       placeholder='Reture date'

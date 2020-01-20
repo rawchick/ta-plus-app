@@ -41,6 +41,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 16,
     top: 10,
+  },
+  customIcon: {
+    position: 'absolute',
+    right: 16,
+    top: 12,
   }
 })
 
@@ -66,11 +71,16 @@ class FieldSelector extends React.PureComponent<any, any> {
   }
 
   renderIcon = () => {
+    if (this.props.customIcon) {
+      return (
+        <View style={styles.customIcon}>
+          {this.props.customIcon}
+        </View>
+      )
+    }
     return (
       <View style={styles.icon}>
-        {this.props.customIcon
-          ? this.props.customIcon
-          : <Icon name={this.props.icon} color="#AEB3B8" size={30} />}
+        <Icon name={this.props.icon} color="#AEB3B8" size={30} />
       </View>
     )
   }

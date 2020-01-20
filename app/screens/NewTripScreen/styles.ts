@@ -37,6 +37,17 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: "left"
   },
+  addMoreText: {
+    color: '#AEB3B8',
+    fontSize: 16,
+    marginLeft: 5
+  },
+  addMoreDestinationBtn: {
+    height: 50,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   tripDestinationItem: {
     padding: 10,
     flexDirection: 'row',

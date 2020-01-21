@@ -4,10 +4,10 @@ import moment from 'moment'
 const MESSAGE = {
   REQUIRED: 'Please specify',
   URGENT: 'Urgent Traveling',
-  VALID_DATE: 'valid date'
+  VALID_DATE: 'Please specify/A travelling date should before returned date'
 }
 
-const getFormatDate = (date: any) => {
+const getDiffFormatDate = (date: any) => {
   return [
     date.getFullYear(),
     date.getMonth(),
@@ -16,7 +16,6 @@ const getFormatDate = (date: any) => {
 }
 
 const validation = (values: any) => {
-  console.log('validation', values)
   const errors: any = {}
   if (!_.trim(values.tripObjective)) {
     errors.tripObjective = MESSAGE.REQUIRED
@@ -36,20 +35,27 @@ const validation = (values: any) => {
   const currentDate = new Date()
   const currentTravellingDate = values.travellingDate.date
   const currentReturnDate = values.returnDate.date
+  const travellingDateDiffFormat = getDiffFormatDate(currentTravellingDate)
+  const retureDateDiffFormat = getDiffFormatDate(currentReturnDate)
+  const currentDateDiffFormat = getDiffFormatDate(currentDate)
 
-  const diffDay = moment(getFormatDate(currentTravellingDate)).diff(getFormatDate(currentDate), 'days')
+  const diffDay = moment(travellingDateDiffFormat).diff(currentDateDiffFormat, 'days')
+  const isMissMatchDate = moment(retureDateDiffFormat).diff(travellingDateDiffFormat, 'days') <= 0
+
   if (!values.travellingDate.isSelected) {
     errors.travellingDate = MESSAGE.REQUIRED
   } else {
-    if (diffDay < 7) {
+    if (isMissMatchDate && values.returnDate.isSelected) {
+      errors.travellingDate = MESSAGE.VALID_DATE
+    } else if (diffDay < 7) {
       errors.travellingDate = MESSAGE.URGENT
     }
   }
-  const isMoreThanTravellingDate = moment(getFormatDate(currentReturnDate)).diff(getFormatDate(currentTravellingDate), 'days') <= 0
+
   if (!values.returnDate.isSelected) {
     errors.returnDate = MESSAGE.REQUIRED
   } else {
-    if (isMoreThanTravellingDate && values.travellingDate.isSelected) {
+    if (isMissMatchDate && values.travellingDate.isSelected) {
       errors.returnDate = MESSAGE.VALID_DATE
     }
   }

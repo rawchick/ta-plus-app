@@ -54,7 +54,10 @@ class HomeScreen extends Component<any, IState> {
                 navigation.setParams({ mode: mode })
               });
           }}>
-          <Image style={{ alignItems: "flex-end" }} source={require('../../assets/icons/option/option.png')} />
+          <Image
+            style={{ alignItems: "flex-end" }}
+            source={require('../../assets/icons/option/option.png')}
+          />
         </TouchableOpacity>
       ),
       headerLeft: () => (<View></View>),
@@ -169,13 +172,13 @@ class HomeScreen extends Component<any, IState> {
     const { HomeScreenState } = this.props
     const { mode } = this.props.navigation.state.params
     const buttons = this.getGroupButton(mode)
-    if (mode !==  this.state.mode) {
+    if (mode !== this.state.mode) {
       this.setState({ mode: mode })
       this.updateIndex(0)
     }
 
     return (
-      <View style={{ flex:1, backgroundColor: '#fff' }}>
+      <View style={{ flex: 1, backgroundColor: '#fff' }}>
         <ScrollView style={{ maxHeight: 54 }} horizontal={mode === 'status' ? true : false}>
           <ButtonGroup
             onPress={this.updateIndex}

@@ -27,6 +27,7 @@ export class HomeScreenAction {
             dispatch({ type: "update", payload: newHomeScreenState })
         } catch (err) {
             console.log('ERROR: ', err)
+            throw(err)
             dispatch({ type: "default", payload: { ...HomeScreenState } })
         }
     }

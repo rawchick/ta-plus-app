@@ -6,6 +6,7 @@ import { Container, Button, Text, Content, Tab, Tabs, Spinner, Left, Icon, Badge
 import { ButtonGroup } from 'react-native-elements'
 import ActionSheet from 'react-native-action-sheet';
 import moment from 'moment'
+import TA_PLUS_API_ENDPOINT from '../../config/env'
 
 import HomeScreenAction from './HomeScreenAction'
 
@@ -176,6 +177,8 @@ class HomeScreen extends Component<any, IState> {
       this.setState({ mode: mode })
       this.updateIndex(0)
     }
+
+    console.log(TA_PLUS_API_ENDPOINT)
 
     return (
       <View style={{ flex: 1, backgroundColor: '#fff' }}>

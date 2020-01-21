@@ -1,6 +1,5 @@
 import myTripService, { IMyTripService } from '../../services/MyTripService'
 import dropdownService, { IDropdownService } from '../../services/DropdownService'
-import { Alert } from 'react-native'
 
 export class HomeScreenAction {
     private myTripService: IMyTripService
@@ -25,25 +24,9 @@ export class HomeScreenAction {
                 tripDataTotal: total
             }
 
-            Alert.alert(
-                'Alert Title',
-                JSON.stringify(results),
-                [
-                    { text: 'ERROR', onPress: () => console.log('Ask me later pressed') },
-                    {
-                        text: 'Cancel',
-                        onPress: () => console.log('Cancel Pressed'),
-                        style: 'cancel',
-                    },
-                    { text: 'OK', onPress: () => console.log('OK Pressed') },
-                ],
-                { cancelable: false },
-            );
-
             dispatch({ type: "update", payload: newHomeScreenState })
         } catch (err) {
             console.log('ERROR: ', err)
-            throw (err)
             dispatch({ type: "default", payload: { ...HomeScreenState } })
         }
     }

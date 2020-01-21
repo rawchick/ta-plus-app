@@ -9,6 +9,7 @@ import HomeScreen from '../screens/HomeScreen/HomeScreen';
 import TripDetailScreen from '../screens/TripDetailScreen/TripDetailScreen';
 import SettingScreen from '../screens/SettingScreen/SettingScreen';
 import SearchScreen from '../screens/SearchScreen/SearchScreen';
+import NonBanpuFormScreen from '../screens/NonBanpuFormScreen/NonBanpuFormScreen'
 import { createSwitchNavigator, createAppContainer } from "react-navigation";
 import { createBottomTabNavigator } from 'react-navigation-tabs'
 import { createStackNavigator } from 'react-navigation-stack';
@@ -47,6 +48,25 @@ const NewTripFormStack = createStackNavigator(
     }
 );
 
+const tripDetailStack = createStackNavigator(
+    {
+        TripDetail: {
+            screen: TripDetailScreen
+        },
+        TripDetailSearchScreen: {
+            screen: SearchScreen,
+            navigationOptions: ({ navigation }): any => {
+                return {
+                    title: "Search " + navigation.state.params.searchType
+                }
+            }
+        },
+        NonBanpuFrom: {
+            screen: NonBanpuFormScreen
+        }
+    }
+)
+
 const HomeStack = createStackNavigator(
     {
         Home: {
@@ -54,7 +74,12 @@ const HomeStack = createStackNavigator(
             params: { mode: 'scheduled' }
         },
         TripDetail: {
-            screen: TripDetailScreen,
+            screen: tripDetailStack,
+            navigationOptions: ({ navigation }): any => {
+                return {
+                    header: null
+                }
+            }
         },
         NewTrip: {
             screen: NewTripFormStack,
@@ -145,9 +170,9 @@ const TabNavigator = createBottomTabNavigator(
         Home: {
             screen: HomeStack,
             navigationOptions: {
-                tabBarLabel: 'Home',
+                tabBarLabel: 'My Trip',
                 tabBarIcon: ({ tintColor }) => (
-                    <NBIcon name="ios-home" fontSize={22} style={{ color: tintColor }} />
+                    <NBIcon name="briefcase" fontSize={22} style={{ color: tintColor }} />
                 ),
             }
         },
@@ -156,7 +181,7 @@ const TabNavigator = createBottomTabNavigator(
             navigationOptions: {
                 tabBarLabel: 'New Trip',
                 tabBarIcon: ({ tintColor }) => (
-                    <NBIcon name="ios-add" fontSize={22} style={{ color: tintColor }} />
+                    <NBIcon name="ios-add-circle-outline" fontSize={22} style={{ color: tintColor }} />
                 )
             }
         },
@@ -171,6 +196,24 @@ const TabNavigator = createBottomTabNavigator(
         }
     },
     {
+        tabBarOptions: {
+            showIcon: true,
+            showLabel: true,
+            activeTintColor: '#064ACB',
+            inactiveTintColor: '#707070',
+            style: {
+                backgroundColor: '#F4F4F6',
+                width: '100%',
+                height: 70
+            },
+            tabStyle: {
+                padding: 10,
+            },
+            labelStyle: {
+                fontSize: 14,
+                fontWeight: 'bold'
+            }
+        },
         defaultNavigationOptions: {
             // other tab navigation options...
             tabBarOnPress: ({ navigation, defaultHandler }) => {
@@ -180,22 +223,7 @@ const TabNavigator = createBottomTabNavigator(
                     defaultHandler();
                 }
             }
-        },
-        tabBarOptions: {
-            showIcon: true,
-            showLabel: true,
-            activeTintColor: '#064ACB',
-            inactiveTintColor: '#707070',
-            style: {
-                width: '100%',
-                height: 70,
-                borderTopWidth: 2,
-                borderTopColor: "#AEB3B8"
-            },
-            tabStyle: {
-                padding: 10,
-            },
-        },
+        }
     }
 )
 

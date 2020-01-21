@@ -20,12 +20,8 @@ const styles = StyleSheet.create({
     },
     subMidContainer1: {
         flex: 2,
-        alignContent: 'center',
+        margin: 30,
         justifyContent: 'center'
-    },
-    subMidContainer1Image: {
-        height: "100%",
-        width: undefined
     }
 });
 

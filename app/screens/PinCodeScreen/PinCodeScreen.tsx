@@ -20,15 +20,19 @@ class PinCodeScreen extends Component<any> {
         this.onPinCodeComplete = this.onPinCodeComplete.bind(this)
         this.handleFingerprintShowed = this.handleFingerprintShowed.bind(this)
         this.handleFingerprintDismissed = this.handleFingerprintDismissed.bind(this)
-        this.detectFingerprintAvailable = this.detectFingerprintAvailable.bind(this)
+        this.handleFingerPrintSuccess = this.handleFingerPrintSuccess.bind(this)
+        this._bootstrap();
+    }
+
+    _bootstrap = async () => {
+        const pinCodeSet = await AsyncStorage.getItem('pinCode')
+        if (pinCodeSet) {
+            this.handleFingerprintShowed()
+        }
     }
 
     handleFingerprintShowed() {
         this.props.toggleFingerPrintPopup(true)
-        FingerprintScanner
-            .isSensorAvailable()
-            .then((biometryType: any) => console.log(biometryType))
-            .catch(error => console.log(error));
     };
 
     handleFingerprintDismissed() {
@@ -40,15 +44,6 @@ class PinCodeScreen extends Component<any> {
             .isSensorAvailable()
             .then(biometryType => console.log(biometryType))
             .catch(error => console.log(error));
-    }
-
-    detectFingerprintAvailable() {
-        FingerprintScanner
-            .isSensorAvailable()
-            .catch(error => {
-                const errorObj: any = { fingerPrintErrorMessage: error.message, biometric: error.biometric }
-                this.props.setFingerPrintError(errorObj)
-            });
     }
 
     onPinCodeComplete = async (inputtedPin: any, clear: any) => {
@@ -76,8 +71,11 @@ class PinCodeScreen extends Component<any> {
         }
     }
 
+    handleFingerPrintSuccess() {
+        this.props.navigation.navigate('App')
+    }
+
     render() {
-        console.log(this.props.PinCodeScreenState.pinCodeHeaderMessage)
         return (
             <View style={{ flex: 1 }}>
                 <View style={{
@@ -109,7 +107,10 @@ class PinCodeScreen extends Component<any> {
                 </View>
                 {
                     this.props.PinCodeScreenState.fingerPrintPopupShowed && (
-                        <FingerPrintAndroid handlePopupDismissed={this.handleFingerprintDismissed} />
+                        <FingerPrintAndroid
+                            handlePopupDismissed={this.handleFingerprintDismissed}
+                            handleSuccess={this.handleFingerPrintSuccess}
+                        />
                     )
                 }
             </View>

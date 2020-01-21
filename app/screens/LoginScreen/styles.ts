@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF'
   },
   topContainer: {
-    flex: 4
+    flex: 3
   },
   imageTop: {
     flex: 1,
@@ -23,9 +23,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   imageMid: {
-    width: undefined,
-    height: '100%',
-    aspectRatio: 1
+    
   },
   buttonContainer: {
     flex: 2,

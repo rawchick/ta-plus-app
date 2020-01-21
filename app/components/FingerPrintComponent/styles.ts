@@ -5,19 +5,21 @@ export default {
         bottom: 0,
         left: 0,
         right: 0,
-        backgroundColor: 'rgba(0, 164, 222, 0.9)',
+        backgroundColor: '#00968880',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
     },
     contentContainer: {
         flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
+        justifyContent: 'flex-start',
         backgroundColor: '#ffffff',
+        width: '80%',
+        padding: 30
     },
     logo: {
-        marginVertical: 45,
+        alignSelf: 'center',
+        margin: 30
     },
     heading: {
         textAlign: 'center',
@@ -28,15 +30,15 @@ export default {
         textAlign: 'center',
         color: error ? '#ea3d13' : '#a5a5a5',
         height: 65,
-        fontSize: 18,
-        marginVertical: 10,
-        marginHorizontal: 20,
+        fontSize: 18
     }),
     buttonContainer: {
-        padding: 20,
+        padding: 10,
+        marginTop: 20,
+        alignItems: 'flex-end'
     },
     buttonText: {
-        color: '#8fbc5a',
+        color: '#009688',
         fontSize: 15,
         fontWeight: 'bold',
     },

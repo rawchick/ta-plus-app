@@ -42,7 +42,7 @@ class LoginScreen extends Component<any> {
 
     render() {
         return (
-            <>
+            <View style={{ flex: 1 }}>
                 <View style={styles.topContainer}>
                     <Image style={styles.imageTop} source={require('../../assets/images/LoginScreen/login_header.png')} />
                 </View>
@@ -60,7 +60,7 @@ class LoginScreen extends Component<any> {
                         </View>
                     </TouchableHighlight>
                 </View>
-            </>
+            </View>
         );
     }
 }

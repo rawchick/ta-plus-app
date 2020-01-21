@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styles from './styles'
 import { connect } from 'react-redux'
-import { Text, View, FlatList, Image, RefreshControl, TouchableHighlight } from 'react-native';
+import { Text, View, FlatList, Image, RefreshControl, TouchableHighlight, TouchableOpacity } from 'react-native';
 import { Item, Input, Spinner } from 'native-base'
 import { ListItem } from 'react-native-elements'
 import SearchScreenAction from './SearchScreenAction'
@@ -43,7 +43,7 @@ class SearchScreen extends Component<any, any> {
 
   componentDidMount() {
     const { searchType } = this.props.navigation.state.params
-    if (searchType === 'Traveler' || searchType === 'ClearanceStaff') {
+    if (searchType === 'Traveler' || searchType === 'ClearanceStaff' || searchType === 'NonBanpuForm') {
       this.props.fetchUser()
     } else if (searchType === 'FromLocation' || searchType === 'DestinationLocation') {
       this.props.fetchPlace()
@@ -52,7 +52,7 @@ class SearchScreen extends Component<any, any> {
 
   onRefresh() {
     const { searchType } = this.props.navigation.state.params
-    if (searchType === 'Traveler' || searchType === 'ClearanceStaff') {
+    if (searchType === 'Traveler' || searchType === 'ClearanceStaff' || searchType === 'NonBanpuForm') {
       this.props.fetchUser()
     } else if (searchType === 'FromLocation' || searchType === 'DestinationLocation') {
       this.props.fetchPlace()
@@ -61,7 +61,7 @@ class SearchScreen extends Component<any, any> {
 
   search(text: any) {
     const { searchType } = this.props.navigation.state.params
-    if (searchType === 'Traveler' || searchType === 'ClearanceStaff') {
+    if (searchType === 'Traveler' || searchType === 'ClearanceStaff' || searchType === 'NonBanpuForm') {
       this.props.fetchUser(text)
     } else if (searchType === 'FromLocation' || searchType === 'DestinationLocation') {
       this.props.fetchPlace(text)
@@ -77,7 +77,7 @@ class SearchScreen extends Component<any, any> {
       setField: (data: any) => void
     } = this.props.navigation.state.params
 
-    if (searchType === 'Traveler') {
+    if (searchType === 'Traveler' || searchType === 'NonBanpuForm') {
       this.props.setTravellerData(data)
     } else if (searchType === 'FromLocation') {
       this.props.setFromLocationData(data)
@@ -98,6 +98,48 @@ class SearchScreen extends Component<any, any> {
         <Item rounded style={{ margin: 15, marginLeft: 15 }} >
           <Input style={{ paddingLeft: 20 }} placeholder='Search' onChangeText={(text) => this.search(text)} />
         </Item>
+        {
+          searchType === 'NonBanpuForm' ?
+            <ListItem
+              leftElement={
+                <View
+                  style={{
+                    width: 60,
+                    height: 60,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderRadius: 50,
+                    borderColor: "#AEB3B8"
+                  }}
+                >
+                  <View
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      right: 0,
+                      width: 20,
+                      height: 20,
+                      zIndex: 5
+                    }}
+                  >
+                    <Image style={{
+                      width: 20,
+                      height: 20,
+                    }} source={require('../../assets/icons/add_circle_green/add_circle_green.png')} />
+                  </View>
+                  <Image style={{
+                    width: 60,
+                    height: 60,
+                  }} source={require('../../assets/icons/non_banpu_person/non_banpu_person.png')} />
+                </View>
+              }
+              containerStyle={{ backgroundColor: '#fff', marginLeft: 10, borderTopWidth: 1, borderBottomWidth: 1 }}
+              key={0}
+              title={"Add non-Banpu traveler"}
+              titleStyle={{ fontWeight: 'bold' }}
+              onPress={() => this.props.navigation.navigate('NonBanpuFrom')}
+            /> : null
+        }
         {
           (this.props.SearchScreenState.loading && this.props.SearchScreenState.page === 1) ?
             <View style={{
@@ -122,11 +164,45 @@ class SearchScreen extends Component<any, any> {
               }
               renderItem={({ item }: any) => (
                 <ListItem
-                  leftAvatar={{ source: { uri: "https://toppng.com/uploads/preview/roger-berry-avatar-placeholder-11562991561rbrfzlng6h.png" } }}
-                  containerStyle={{ backgroundColor: '#fff', marginLeft: 10, borderTopWidth: 1 }}
+                  leftElement={
+                    searchType === 'Traveler' || searchType === 'NonBanpuForm' ?
+                      <View
+                        style={{
+                          width: 60,
+                          height: 60,
+                          justifyContent: "center",
+                          alignItems: "center",
+                          backgroundColor: "#AC91FD",
+                          borderWidth: 3,
+                          borderRadius: 50,
+                          borderColor: "#AC91FD",
+                        }}
+                        key={item.key}
+                      >
+                        <Text style={{ fontSize: 30, fontWeight: 'bold', color: '#fff' }}>{item.firstName ? `${item.firstName.slice(0, 1)}${item.sureName.slice(0, 1)}` : ''}</Text>
+                      </View>
+                      :
+                      <View
+                        style={{
+                          width: 60,
+                          height: 60,
+                          justifyContent: "center",
+                          alignItems: "center",
+                          borderRadius: 50,
+                          borderColor: "#AEB3B8"
+                        }}
+                      >
+                        <Image style={{
+                          width: 60,
+                          height: 60,
+                        }} source={require('../../assets/icons/plane/plane.png')} />
+                      </View>
+                  }
+                  containerStyle={{ backgroundColor: '#fff', marginLeft: 10, borderBottomWidth: 1 }}
                   key={item.id}
-                  title={searchType === 'Traveler' || searchType === 'ClearanceStaff' ? item.firstName + ' ' + item.sureName : item.title}
-                  subtitle={searchType === 'Traveler' || searchType === 'ClearanceStaff' ? item.jobTitle : item.subTitle}
+                  titleStyle={{ fontWeight: 'bold' }}
+                  title={searchType === 'Traveler' || searchType === 'ClearanceStaff' || searchType === 'NonBanpuForm' ? item.firstName + ' ' + item.sureName : item.title}
+                  subtitle={searchType === 'Traveler' || searchType === 'ClearanceStaff' || searchType === 'NonBanpuForm' ? item.jobTitle : item.subTitle}
                   onPress={() => this._getData(item)}
                 />
               )}

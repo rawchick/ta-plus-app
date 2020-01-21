@@ -3,6 +3,7 @@ import env from '../config/env';
 
 export interface IProfileService {
     searchProfile: (keyword: string, offset: number, limit: number) => Promise<any[]>;
+    getProfileById: (employeeId: string) => Promise<any>;
 }
 
 class ProfileService implements IProfileService {
@@ -15,6 +16,18 @@ class ProfileService implements IProfileService {
             return results;
         } catch (error) {
             return [];
+        }
+    }
+
+    async getProfileById(employeeId: string): Promise<any> {
+        try {
+            const url = `${env.TA_PLUS_API_ENDPOINT}profiles/${employeeId}`;
+            const response = await axios.get(url);
+            if (response.data.errors && response.data.errors.length > 0) throw response.data.errors;
+            const results: any = response.data.data;
+            return results;
+        } catch (error) {
+            return null;
         }
     }
 }

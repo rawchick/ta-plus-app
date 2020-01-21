@@ -60,7 +60,7 @@ class SplashScreen extends Component<any> {
                     <View style={styles.emptyContainer1}>
                     </View>
                     <View style={styles.subMidContainer1}>
-                        <Image style={styles.subMidContainer1Image} source={require('../../assets/images/common/app_logo.png')} />
+                        <Image style={{ alignSelf: 'center' }} resizeMode="contain" source={require('../../assets/images/common/app_logo.png')} />
                     </View>
                     <View style={styles.emptyContainer1}>
                     </View>

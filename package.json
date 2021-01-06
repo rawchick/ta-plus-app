@@ -18,7 +18,7 @@
     "appcenter": "2.6.0",
     "appcenter-analytics": "2.6.0",
     "appcenter-crashes": "2.6.0",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "formik": "^2.1.2",
     "jetifier": "^1.6.5",
     "lodash": "^4.17.15",

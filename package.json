@@ -21,7 +21,7 @@
     "axios": "^0.19.0",
     "formik": "^2.1.2",
     "jetifier": "^1.6.5",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "moment": "^2.24.0",
     "native-base": "^2.13.8",
     "react": "16.9.0",
@@ -79,7 +79,7 @@
     "babel-plugin-module-resolver": "^4.0.0",
     "eslint": "6.7.1",
     "jest": "24.9.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "metro-react-native-babel-preset": "0.56.3",
     "mocker-data-generator": "^2.6.6",
     "react-test-renderer": "16.9.0"

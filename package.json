@@ -22,7 +22,7 @@
     "formik": "^2.1.2",
     "jetifier": "^1.6.5",
     "lodash": "^4.17.15",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "native-base": "^2.13.8",
     "react": "16.9.0",
     "react-native": "0.61.5",
